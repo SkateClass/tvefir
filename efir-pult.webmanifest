@@ -1,0 +1,33 @@
+{
+  "id": "./efir-remote-home.html",
+  "name": "ЭФИР — Пульт",
+  "short_name": "ЭФИР Пульт",
+  "description": "Домашний пульт управления телевизором ЭФИР",
+  "lang": "ru",
+  "start_url": "./efir-remote-home.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0b10",
+  "theme_color": "#0b0b10",
+  "icons": [
+    {
+      "src": "./efir-pult-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./efir-pult-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./efir-pult-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
