@@ -10,7 +10,7 @@ function homeRead(url,params){return new Promise((resolve,reject)=>{const cb='ef
 async function homeWrite(url,q){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),25000);try{return await fetch(url,{method:'POST',mode:'no-cors',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(q),signal:ctrl.signal})}finally{clearTimeout(timer)}}
 function homeHash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+'_'+text.length}
 
-const DEFAULT_SERVER='https://script.google.com/macros/s/AKfycbyKqH2_X0ESwJLMEEJYpgoC0SI5qf27nMdKU4h915jyRoBEGYjSfNpa6KgA00jh1p1x/exec',KEY='efir.home.remote.v21',$=id=>document.getElementById(id);
+const DEFAULT_SERVER='https://script.google.com/macros/s/AKfycbxV5PJHc-EjB1Fq38g0mJZzTFqYEG8aJAO1va5XN4H92-7gxXly1tJxPO1t5xp06-Kq/exec',KEY='efir.home.remote.v21',$=id=>document.getElementById(id);
 let config={url:DEFAULT_SERVER,preview:true,muted:true,token:'',deviceId:'',order:[],preferred:{}};try{const old=JSON.parse(localStorage.getItem('efir.home.remote.v2')||'{}');config={...config,url:old.url||DEFAULT_SERVER,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
 if(!config.deviceId)config.deviceId=homeUid();if(!Array.isArray(config.order))config.order=[];if(!config.preferred||typeof config.preferred!=='object')config.preferred={};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(config));return true}catch(e){return false}}save();
