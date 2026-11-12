@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b10">
+<meta name="application-name" content="ЭФИР — Пульт">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ЭФИР — Пульт">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="180x180" href="./efir-pult-icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./efir-pult-icon-192.png">
+<link rel="manifest" href="./efir-pult.webmanifest">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>ЭФИР — Пульт</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23a78bfa%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%237065f0%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2300c8e8%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23fff%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c8f6ff%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2218%22%20fill%3D%22%230b0b12%22%2F%3E%3Cpath%20d%3D%22M21%2015%2029%2023M43%2015%2035%2023%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2214%22%20r%3D%223%22%20fill%3D%22%23a78bfa%22%2F%3E%3Ccircle%20cx%3D%2244%22%20cy%3D%2214%22%20r%3D%223%22%20fill%3D%22%2300c8e8%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%2223%22%20width%3D%2244%22%20height%3D%2231%22%20rx%3D%228%22%20fill%3D%22url(%23g)%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2227%22%20width%3D%2236%22%20height%3D%2223%22%20rx%3D%225%22%20fill%3D%22%2310121c%22%2F%3E%3Cpath%20d%3D%22m27%2032%2012%206.5L27%2045z%22%20fill%3D%22url(%23s)%22%2F%3E%3Cpath%20d%3D%22M25%2058h14%22%20stroke%3D%22%239c8cff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark;--bg:#0b0b10;--line:#ffffff1c;--muted:#9b9aa9;--grad:linear-gradient(135deg,#7b61ff,#00c2ff)}
+body{margin:0;background:radial-gradient(ellipse at top left,#7b61ff12,transparent 50%),var(--bg);color:#f6f5ff;font:14px/1.5 Manrope,Segoe UI,Arial,sans-serif;min-height:100dvh}
+button,input,select{font-family:inherit;color:inherit;border:1px solid var(--line);background:#17171f;border-radius:12px;min-height:44px;padding:10px 13px}
+input,select{font-size:16px!important;width:100%;max-width:100%}
+button{font-size:13px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:hover{border-color:#9880ff}
+button:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:2px solid #baa6ff;outline-offset:2px}
+[hidden]{display:none!important}
+.primary{background:var(--grad);border:0;font-weight:800}
+.shell{max-width:1240px;margin:auto;padding:0 22px max(25px,env(safe-area-inset-bottom))}
+.tv-fixed{position:sticky;top:0;z-index:30;background:var(--bg);padding-bottom:10px;box-shadow:0 8px 18px #0006}
+header{padding:max(15px,env(safe-area-inset-top)) 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);gap:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:43px;height:43px;flex-shrink:0}
+.wordmark{font-weight:800;font-size:23px;letter-spacing:3px;line-height:1.1}
+.wordmark span{color:#ac96ff}
+.wordmark small{display:block;color:var(--muted);font-size:8px;letter-spacing:2px;margin-top:5px}
+.right{display:flex;align-items:center;gap:10px}
+.network{font-size:11px;color:var(--muted)}
+.network.online{color:#8de0c6}
+.icon{width:44px;padding:8px;font-size:20px}
+.hero{display:flex;align-items:center;gap:18px;background:linear-gradient(120deg,#211a30,#11151d);border:1px solid #7b61ff33;border-radius:21px;padding:21px;margin:22px 0}
+.hero .copy{min-width:0;flex:1}
+.eyebrow{font-size:9px;letter-spacing:1.4px;color:#c6b5ff;text-transform:uppercase}
+h1{font-size:clamp(18px,3vw,26px);line-height:1.3;margin:5px 0;overflow-wrap:anywhere}
+h2{font-size:18px;margin:0}
+p{margin:6px 0}
+.muted,small{color:var(--muted)}
+.hero p{font-size:12px;color:var(--muted)}
+.logo{position:relative;display:grid;place-items:center}
+.hero .logo{width:80px;height:70px;flex-shrink:0;background:#ffffff06;border:1px solid var(--line);border-radius:13px}
+.logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px}
+.initial{font-size:23px;font-weight:800;color:#baaaff}
+.screen-mini{width:200px;height:112px;flex-shrink:0;background:#030305;border:1px solid var(--line);border-radius:13px;overflow:hidden;position:relative}
+.screen-mini video,.screen-mini iframe{width:100%;height:100%;border:0;display:block}
+.screen-mini:empty:after{content:'Эфир';display:grid;place-items:center;height:100%;color:#777482;font-size:12px}
+.live-status{font-size:11px;color:#cbbaff;min-height:18px;margin-top:4px}
+.live-status.bad{color:#ffc2cc}
+.live-status.warn{color:#ffd479}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:24px 0 14px}
+.heading p{font-size:11px;color:var(--muted)}
+.tools{display:grid;grid-template-columns:1fr 190px auto;gap:10px}
+.tabs{display:flex;gap:3px;border:1px solid var(--line);padding:3px;border-radius:12px}
+.tabs button{background:transparent;border:0;min-height:38px}
+.tabs .on,.on{background:#7b61ff30;color:#cfbfff}
+.status{font-size:12px;color:#cbbaff;min-height:24px;margin:12px 0;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:13px}
+.tile{position:relative;min-width:0;border:1px solid var(--line);border-radius:17px;background:linear-gradient(150deg,#191921,#111118);overflow:hidden}
+.tile-open{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;width:100%;padding:16px 10px 12px;min-height:154px;border-radius:16px}
+.tile .logo{height:78px;width:100%;margin-bottom:9px}
+.tile .logo img{padding:9px 15px}
+.tile .name{font-size:12px;line-height:1.4;font-weight:700;min-height:34px;display:flex;align-items:center;justify-content:center;overflow-wrap:anywhere}
+.source-count{font-size:9px;line-height:1.2;color:#a9a2bb;margin-top:5px}
+.tag{display:none;position:absolute;top:6px;left:7px;background:#7b61ff44;color:#e7ddff;padding:2px 5px;border-radius:6px;font-size:8px;z-index:1;pointer-events:none}
+.tile.current{border-color:#af92ff;box-shadow:0 0 0 1px #7b61ff22;background:linear-gradient(140deg,#302145,#172330)}
+.tile.current .tag{display:block}
+.tile.last{border-style:dashed}
+.edit-controls{display:flex;align-items:center;justify-content:center;gap:3px;padding:6px;border-top:1px solid var(--line);flex-wrap:wrap}
+.edit-controls button{min-width:30px;min-height:32px;padding:4px 7px;font-size:13px}
+.edit-controls .handle{touch-action:none;cursor:grab;user-select:none}
+.tile.dragging{opacity:.35}
+.dragghost{position:fixed;z-index:100;pointer-events:none;max-width:220px;padding:12px 18px;background:#322449;border:1px solid #bba2ff;border-radius:12px;box-shadow:0 10px 30px #0006}
+.edit-help{border:1px solid #7b61ff44;background:#21192e;border-radius:12px;padding:10px;font-size:12px;margin:10px 0}
+.empty{padding:40px 18px;text-align:center;border:1px dashed var(--line);border-radius:18px;color:var(--muted)}
+.empty p{margin:8px auto 18px;max-width:400px}
+.wide{width:100%}
+.more{margin:18px 0;width:100%}
+footer{display:flex;justify-content:space-between;gap:14px;font-size:10px;color:#777482;margin-top:25px}
+dialog{background:#111119;color:#f6f5ff;border:1px solid #ffffff26;border-radius:21px;padding:0;width:min(540px,calc(100vw - 24px));max-height:calc(100dvh - 28px);overflow:auto;box-shadow:0 30px 100px #000b}
+dialog::backdrop{background:#03030920;backdrop-filter:blur(1px)}
+.modalhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.modalhead h2{font-size:17px}
+.body{padding:18px}
+.preview-head{display:flex;gap:12px;align-items:center;margin-bottom:13px}
+.mini{width:55px;height:48px;flex-shrink:0}
+.preview-head h3{font-size:16px;margin:0}
+.preview-head p{font-size:11px;color:var(--muted)}
+.screen{aspect-ratio:16/9;background:#030305;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.screen:empty:after{content:'Предпросмотр эфира';display:grid;place-items:center;height:100%;color:#777482;font-size:12px}
+.screen video,.screen iframe{width:100%;height:100%;border:0;display:block}
+.note{font-size:11px;color:var(--muted);min-height:34px;margin:10px 0}
+.row{display:flex;gap:8px;align-items:center;margin:12px 0}
+.row select{min-width:0;flex:1}
+.row>*{min-width:0}
+.field{display:block;font-size:12px;color:#c1b9d0;margin:13px 0 6px}
+.help{font-size:11px;color:var(--muted);margin:9px 0 15px;overflow-wrap:anywhere}
+.pin{text-align:center;font-size:24px!important;letter-spacing:8px}
+.setting{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line)}
+.setting input{width:20px;min-height:20px;accent-color:#9174ff}
+.setting p{font-size:11px;color:var(--muted)}
+.gate-logo{display:block;margin:0 auto 14px;width:58px;height:58px}
+.danger{color:#ffc2cc}
+.settings-msg{font-size:12px;color:#cebbff;overflow-wrap:anywhere;margin-top:12px;min-height:22px}
+pre{font:11px/1.6 monospace;background:#08080e;padding:10px;border-radius:10px;max-height:180px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.source-status{font-size:11px;color:#b8d8ee;min-height:20px}
+.check{display:flex;align-items:center;gap:8px;font-size:12px}
+.check input{width:18px;min-height:18px;accent-color:#9174ff}
+@media(max-width:700px){
+dialog::backdrop{background:#030309cc;backdrop-filter:blur(6px)}
+.shell{padding-left:14px;padding-right:14px}
+.tools{grid-template-columns:1fr 150px}
+.tabs{grid-column:1/-1;justify-self:start}
+.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tile-open{min-height:139px;padding:14px 6px 9px}
+.tile .logo{height:66px}
+.tile .logo img{padding:8px 5px}
+.tile .name{font-size:11px}
+.hero{padding:16px;gap:12px}
+.hero .logo{width:61px;height:57px}
+.hero h1{font-size:19px}
+.network{max-width:110px}
+.screen-mini{width:140px;height:80px}
+}
+@media(max-width:460px){
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.tile .name{font-size:10px}
+.tools{grid-template-columns:1fr 130px}
+.hero .logo{width:49px;height:50px}
+.hero .logo img{padding:6px}
+.hero p{font-size:10px}
+.hero h1{font-size:17px}
+.hero #stop{display:none}
+.wordmark{font-size:20px}
+.right{gap:6px}
+.brand{gap:7px}
+.brand svg{width:35px;height:35px}
+.body{padding:14px}
+.heading #edit{font-size:11px;padding:8px}
+.edit-controls button{padding:4px 6px}
+.screen-mini{width:110px;height:64px}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+<div class="tv-fixed">
+<header>
+<div class="brand">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a78bfa"/><stop offset=".55" stop-color="#7065f0"/><stop offset="1" stop-color="#00c8e8"/></linearGradient><linearGradient id="s" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#c8f6ff"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="#0b0b12"/><path d="M21 15 29 23M43 15 35 23" fill="none" stroke="url(#g)" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="14" r="3" fill="#a78bfa"/><circle cx="44" cy="14" r="3" fill="#00c8e8"/><rect x="10" y="23" width="44" height="31" rx="8" fill="url(#g)"/><rect x="14" y="27" width="36" height="23" rx="5" fill="#10121c"/><path d="m27 32 12 6.5L27 45z" fill="url(#s)"/><path d="M25 58h14" stroke="#9c8cff" stroke-width="3" stroke-linecap="round"/></svg>
+<div class="wordmark">Э<span>Ф</span>ИР<small>HOME · ПУЛЬТ</small></div>
+</div>
+<div class="right">
+<span class="network" id="network">Не подключён</span>
+<button class="icon" id="settings" aria-label="Настройки" title="Настройки">⚙</button>
+</div>
+</header>
+<section class="hero">
+<div class="logo" id="nowLogo"><span class="initial">ТВ</span></div>
+<div class="copy">
+<div class="eyebrow">Телевизор · компьютер</div>
+<h1 id="nowTitle">Ваш домашний эфир</h1>
+<p id="nowState">Подключаемся…</p>
+<p id="liveStatus" class="live-status"></p>
+</div>
+<div class="screen-mini" id="liveScreen"></div>
+<button id="stop" disabled>Остановить</button>
+</section>
+</div>
+<div class="heading">
+<div><h2>Телеканалы</h2><p id="count">—</p></div>
+<button id="edit">Изменить порядок</button>
+</div>
+<div class="tools">
+<input id="search" type="text" name="efir_channel_filter_v25" placeholder="Найти канал" aria-label="Поиск канала" role="searchbox" inputmode="search" autocomplete="new-password" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly>
+<select id="category" aria-label="Категория"><option value="">Все категории</option></select>
+<div class="tabs">
+<button id="all" class="on" aria-pressed="true">Все</button>
+<button id="fav" aria-pressed="false">Избранное</button>
+</div>
+</div>
+<div id="editHelp" class="edit-help" hidden>Перетаскивайте за ⠿ или используйте ↑ / ↓. Кнопка «В начало» поднимет канал наверх. Порядок сохраняется на этом устройстве. <button id="resetOrder">Вернуть исходный</button></div>
+<div id="message" class="status" role="status" aria-live="polite"></div>
+<div id="empty" class="empty"><h2>Один пульт — весь эфир</h2><p>Подтвердите PIN один раз. Адрес сервера и устройство запомнятся.</p><button class="primary" id="connect">Подключить пульт</button></div>
+<div class="grid" id="grid"></div>
+<button id="more" class="more" hidden>Показать ещё</button>
+<footer><span>ЭФИР HOME · 2.5</span><span id="updated">Команды отдельно от каталога</span></footer>
+</main>
+
+<dialog id="previewDialog" aria-labelledby="previewTitle">
+<div class="modalhead"><h2>Предпросмотр эфира</h2><button class="icon" id="closePreview" aria-label="Закрыть">✕</button></div>
+<div class="body">
+<div class="preview-head">
+<div class="logo mini" id="previewLogo"></div>
+<div><h3 id="previewTitle"></h3><p id="previewSub">Компьютер пока не переключён</p></div>
+</div>
+<div class="screen" id="screen"></div>
+<p class="note" id="previewNote" role="status"></p>
+<div class="source-status" id="sourceStatus"></div>
+<div class="row"><select id="source" aria-label="Источник предпросмотра"></select><button id="retry">Повторить</button></div>
+<button id="allSources" class="wide">Получить все источники с компьютера</button>
+<label class="check" style="margin:12px 0"><input type="checkbox" id="useSource">На ПК использовать выбранный здесь источник</label>
+<button class="primary wide" id="switch">Переключить на компьютере</button>
+<p class="help" id="switchHint">Предпросмотр не меняет канал на компьютере. Без галочки ПК использует свой сохранённый источник.</p>
+</div>
+</dialog>
+
+<dialog id="settingsDialog" aria-labelledby="settingsTitle">
+<div class="modalhead"><h2 id="settingsTitle">Настройки пульта</h2><button class="icon" id="closeSettings" aria-label="Закрыть">✕</button></div>
+<div class="body">
+<form id="gate">
+<div class="gate-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a78bfa"/><stop offset=".55" stop-color="#7065f0"/><stop offset="1" stop-color="#00c8e8"/></linearGradient><linearGradient id="s" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#c8f6ff"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="#0b0b12"/><path d="M21 15 29 23M43 15 35 23" fill="none" stroke="url(#g)" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="14" r="3" fill="#a78bfa"/><circle cx="44" cy="14" r="3" fill="#00c8e8"/><rect x="10" y="23" width="44" height="31" rx="8" fill="url(#g)"/><rect x="14" y="27" width="36" height="23" rx="5" fill="#10121c"/><path d="m27 32 12 6.5L27 45z" fill="url(#s)"/><path d="M25 58h14" stroke="#9c8cff" stroke-width="3" stroke-linecap="round"/></svg></div>
+<h2 style="text-align:center">Подтвердите PIN</h2>
+<div id="firstUrl" hidden><label class="field" for="bootstrapUrl">URL Apps Script /exec</label><input id="bootstrapUrl" type="url" autocomplete="off" spellcheck="false"></div>
+<label class="field" for="pin">PIN из Settings!B2</label>
+<input class="pin" id="pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" maxlength="12" autocomplete="off" required>
+<p class="help">Вход запоминается. Для другого сервера нужен его PIN.</p>
+<button class="primary wide" id="unlock" type="submit">Подтвердить и запомнить</button>
+<button class="wide" id="otherServer" type="button" style="margin-top:9px">Другой сервер</button>
+</form>
+<div id="options" hidden>
+<label class="field" for="serverUrl">URL сервера — должен совпадать с ТВ-плеером</label>
+<input id="serverUrl" type="url" spellcheck="false" autocomplete="off">
+<label class="field" for="serverPin">PIN нового сервера — только при смене URL</label>
+<input id="serverPin" type="password" inputmode="numeric" maxlength="12" autocomplete="off">
+<div class="row"><button id="saveServer">Сохранить</button><button id="defaultServer">Сервер из пакета</button></div>
+<div class="setting"><div>Предпросмотр эфира<p>Один поток в открытом окне</p></div><input id="enablePreview" type="checkbox" aria-label="Предпросмотр"></div>
+<div class="setting"><div>Начинать без звука</div><input id="mutePreview" type="checkbox" aria-label="Без звука"></div>
+<div class="row"><button id="refresh">Обновить каталог</button><button id="logout" class="danger">Забыть устройство</button></div>
+<h2 style="font-size:15px;margin-top:20px">Диагностика связи</h2>
+<pre id="diagnostics"></pre>
+<button id="copyDiagnostics" class="wide">Скопировать диагностику без ключей</button>
+<p class="help">Часового срока нет. PIN меняется в Settings!B2; Devices → revoked=TRUE отзывает устройство. Запросы к каталогу не блокируют команды.</p>
+</div>
+<div id="settingsMsg" class="settings-msg" role="status"></div>
+</div>
+</dialog>
+
+<script>
+'use strict';
+
+function homeUid(){const b=new Uint8Array(32);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,'0')).join('')}
+function homeValid(s){return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(String(s||'').trim())}
+function homeRead(url,params){return new Promise((resolve,reject)=>{const cb='efir_'+homeUid(),s=document.createElement('script');let timer;const clean=()=>{clearTimeout(timer);s.remove();window[cb]=()=>{};setTimeout(()=>delete window[cb],60000)};window[cb]=d=>{clean();d.ok?resolve(d):reject(Error(d.error||'Ошибка сервера'))};s.onerror=()=>{clean();reject(Error('Сервер недоступен. Проверьте URL /exec и доступ без входа в Google.'))};timer=setTimeout(()=>{clean();reject(Error('Нет ответа за 20 секунд'))},20000);s.referrerPolicy='no-referrer';s.src=url+'?'+new URLSearchParams({...params,callback:cb,t:Date.now()});document.head.append(s)})}
+async function homeWrite(url,q){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),25000);try{return await fetch(url,{method:'POST',mode:'no-cors',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(q),signal:ctrl.signal})}finally{clearTimeout(timer)}}
+function homeHash(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+'_'+text.length}
+
+const DEFAULT_SERVER='https://script.google.com/macros/s/AKfycbyy03hs00Gy1q1bc_7of6-9MBZZ5QSRv5LtYxQMQejKLdjFiFmEIAJY0TXXUokJXUWR/exec',KEY='efir.home.remote.v21',$=id=>document.getElementById(id);
+(()=>{const el=$('search');if(!el)return;const looksLikeServer=v=>/^\s*https?:\/\//i.test(v)||/script\.google\.com\/macros\/s\//i.test(v);const clean=()=>{if(looksLikeServer(el.value)){el.value='';el.dispatchEvent(new Event('input',{bubbles:true}));}};el.addEventListener('focus',()=>{el.readOnly=false;clean()});el.addEventListener('input',clean);el.addEventListener('change',clean);window.addEventListener('pageshow',clean);setTimeout(clean,0);setTimeout(clean,300);setTimeout(clean,1200);})();
+let config={url:DEFAULT_SERVER,preview:true,muted:true,token:'',deviceId:'',order:[],preferred:{}};try{const old=JSON.parse(localStorage.getItem('efir.home.remote.v2')||'{}');config={...config,url:old.url||DEFAULT_SERVER,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
+if(!config.deviceId)config.deviceId=homeUid();if(!Array.isArray(config.order))config.order=[];if(!config.preferred||typeof config.preferred!=='object')config.preferred={};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(config));return true}catch(e){return false}}save();
+const read=(q,url=config.url)=>homeRead(url,q),write=(q,url=config.url)=>homeWrite(url,q),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ORDER=['Первый канал','Россия 1','НТВ','Пятый канал','РЕН ТВ','СТС','ТНТ','Звезда','ТВЦ','Россия 24','ТНТ-4','МИР','Москва 24','Россия Культура','ОТР','Пятница!'];
+const norm=s=>String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[^а-яa-z0-9]/g,'');
+const ALIASES=[['Первый канал','Channel One','ChannelOne','Perviy Kanal','1TV'],['Россия 1','Russia 1','Rossiya 1'],['НТВ','NTV'],['Пятый канал','5 канал','5 Kanal','Pyatyy Kanal','Channel 5 Russia'],['РЕН ТВ','REN TV'],['СТС','STS','CTC'],['ТНТ','TNT'],['Звезда','Zvezda'],['ТВЦ','ТВ Центр','TV Centre','TV Center','TV Tsentr'],['Россия 24','Russia 24','Rossiya 24'],['ТНТ-4','TNT4'],['МИР','Mir'],['Москва 24','Moskva 24','Moscow 24'],['Россия Культура','Rossiya K','Russia K','Россия К'],['ОТР','OTR'],['Пятница!','Pyatnitsa!','Friday!']];
+const rankMap=new Map();ALIASES.forEach((a,i)=>a.forEach(n=>rankMap.set(norm(n),i)));
+function defaultRank(c){const n=norm(c.name);return rankMap.get(n)??rankMap.get(n.replace(/(?:fhd|uhd|hd|sd|4k)$/,''))??999}
+function sortChannels(list){const personal=new Map(config.order.map((id,i)=>[id,i]));const fed=new Set(ORDER.map(norm));return list.map((c,i)=>({c,i})).sort((a,b)=>{const fa=fed.has(norm(a.c.name)),fb=fed.has(norm(b.c.name));if(fa!==fb)return fa?-1:1;if(fa&&fb)return defaultRank(a.c)-defaultRank(b.c);const pa=personal.get(a.c.id)??1e9,pb=personal.get(b.c.id)??1e9;if(pa!==pb)return pa-pb;return defaultRank(a.c)-defaultRank(b.c)||a.i-b.i}).map(x=>x.c)}
+let channels=[],version='',state={},connected=false,online=false,onlyFav=false,limit=120,selected=null,pending=null,timer=null,busy=false,urgent=false,run=0,failures=0,catalogBusy=false,gateServer='',optionsUnlocked=false,tileMap=new Map(),editing=false,sourceRun=0,catalogRetryAt=0,authBlocked=false;
+const diag={version:'2.5',statusMs:0,statusAt:'',commandStage:'нет команды',lastError:'',catalog:'не загружен',sources:'не запрашивались'};
+const msg=t=>$('message').textContent=t,settingsMsg=t=>$('settingsMsg').textContent=t;
+function diagnostics(){const u=config.url.split('/s/')[1]||'';$('diagnostics').textContent=JSON.stringify({...diag,server:u.slice(0,16)+'…'+u.slice(-10),playerName:state.name||'',playerState:state.state||'',playerAgeSeconds:state.at?Math.max(0,Math.round((Date.now()-state.at)/1000)):null,channelCount:channels.length,authBlocked},null,2)}
+function logo(node,c){node.replaceChildren();const t=document.createElement('span');t.className='initial';t.textContent=c?c.name.split(/\s+/).map(x=>x[0]).join('').slice(0,3):'ТВ';node.append(t);if(c&&/^https?:\/\//i.test(c.logo||'')){const i=document.createElement('img');i.alt='';i.loading='lazy';i.decoding='async';i.referrerPolicy='no-referrer';i.onload=()=>t.hidden=true;i.onerror=()=>i.remove();i.src=c.logo;node.append(i)}}
+function highlight(){for(const [id,t] of tileMap){const same=id===state.id;t.classList.toggle('current',same);t.classList.toggle('last',same&&(!online||state.stopped));t.querySelector('.tag').textContent=online&&!state.stopped?'НА КОМПЬЮТЕРЕ':'ПОСЛЕДНИЙ';t.querySelector('.tile-open').setAttribute('aria-label',t.dataset.name+(same?' — выбран на компьютере':'')+'; предпросмотр')}}
+function update(){online=connected&&!!state.at&&Date.now()-state.at<90000;$('network').textContent=online?'ТВ на связи':config.token?'ТВ не отвечает':'Нужен PIN';$('network').classList.toggle('online',online);$('nowTitle').textContent=state.name||'Ваш домашний эфир';const names={playing:'Воспроизведение',loading:'Подключение',waiting:'Буферизация',paused:'Пауза'};let txt=!config.token?'Войдите по PIN один раз':!online?'Проверьте подключение ПК к этому же серверу':state.stopped?'Воспроизведение остановлено':names[state.state]||state.state||'Ожидаем канал';const unstable=isUnstable();if(online&&!state.stopped&&unstable){txt+=' · нестабильная работа трансляции';$('liveStatus').textContent='Нестабильная работа трансляции: частые кратковременные остановки.';$('liveStatus').className='live-status warn'}else if(online&&!state.stopped){$('liveStatus').textContent='Трансляция активна.';$('liveStatus').className='live-status'}else{$('liveStatus').textContent='';$('liveStatus').className='live-status'}
+$('nowState').textContent=txt;const c=channels.find(c=>c.id===state.id);if($('nowLogo').dataset.id!==(c?c.id:'')){$('nowLogo').dataset.id=c?c.id:'';logo($('nowLogo'),c);playLive(c)}$('stop').disabled=!online||!!pending;$('switch').disabled=!online||!selected||!!pending;$('switch').textContent=pending?'Ожидаем подтверждение…':'Переключить на компьютере';if(selected)$('previewSub').textContent=selected.id===state.id?'Этот канал выбран на компьютере':'Компьютер пока не переключён';highlight();diagnostics()}
+function filtered(){const q=norm($('search').value),cat=$('category').value;return channels.filter(c=>(!q||norm(c.name).includes(q))&&(!cat||c.categories.includes(cat))&&(!onlyFav||c.favorite))}
+function render(){const list=filtered();$('count').textContent='Каналов: '+list.length;$('grid').replaceChildren();tileMap.clear();const f=document.createDocumentFragment();list.slice(0,limit).forEach(c=>{const tile=document.createElement('article');tile.className='tile';tile.dataset.id=c.id;tile.dataset.name=c.name;const tag=document.createElement('span');tag.className='tag';const b=document.createElement('button');b.className='tile-open';b.disabled=editing;const l=document.createElement('div');l.className='logo';logo(l,c);const n=document.createElement('span');n.className='name';n.textContent=c.name;b.append(l,n);if(Number(c.sourceCount)>0){const sc=document.createElement('span');sc.className='source-count';sc.textContent=Number(c.sourceCount)+' источн.';b.append(sc)}b.onclick=()=>openPreview(c);tile.append(tag,b);if(editing){const box=document.createElement('div');box.className='edit-controls';const handle=document.createElement('button');handle.className='handle';handle.textContent='⠿';handle.title='Перетащить '+c.name;handle.setAttribute('aria-label',handle.title);handle.onpointerdown=e=>beginDrag(e,c.id);handle.onkeydown=e=>{if(['ArrowUp','ArrowLeft','ArrowDown','ArrowRight'].includes(e.key)){e.preventDefault();moveStep(c.id,['ArrowUp','ArrowLeft'].includes(e.key)?-1:1)}};const up=document.createElement('button');up.textContent='↑';up.title='Раньше';up.onclick=()=>moveStep(c.id,-1);const down=document.createElement('button');down.textContent='↓';down.title='Дальше';down.onclick=()=>moveStep(c.id,1);const top=document.createElement('button');top.textContent='В начало';top.onclick=()=>{channels=channels.filter(x=>x.id!==c.id);channels.unshift(c);persistOrder();render()};box.append(handle,up,down,top);tile.append(box)}tileMap.set(c.id,tile);f.append(tile)});$('grid').append(f);$('more').hidden=list.length<=limit;$('empty').hidden=channels.length>0;$('editHelp').hidden=!editing;$('edit').classList.toggle('on',editing);$('edit').textContent=editing?'Готово':'Изменить порядок';highlight()}
+function persistOrder(){config.order=channels.map(c=>c.id);if(!save())msg('Не удалось сохранить порядок: хранилище браузера недоступно.')}
+function relative(id,target,after){if(id===target)return;const c=channels.find(c=>c.id===id);if(!c)return;channels=channels.filter(c=>c.id!==id);const i=channels.findIndex(c=>c.id===target);channels.splice(i+(after?1:0),0,c)}
+function moveStep(id,step){const list=filtered(),i=list.findIndex(c=>c.id===id),target=list[i+step];if(!target)return;relative(id,target.id,step>0);persistOrder();render()}
+let drag=null,dragInterval=null;
+function beginDrag(e,id){if(e.button!==0)return;e.preventDefault();const tile=tileMap.get(id),ghost=document.createElement('div');ghost.className='dragghost';ghost.textContent=tile.dataset.name;document.body.append(ghost);tile.classList.add('dragging');drag={id,pointer:e.pointerId,x:e.clientX,y:e.clientY,tile,ghost};e.currentTarget.setPointerCapture?.(e.pointerId);placeGhost();dragInterval=setInterval(()=>{if(!drag)return;if(drag.y<80)window.scrollBy(0,-15);else if(drag.y>innerHeight-80)window.scrollBy(0,15);hitDrag()},70)}
+function placeGhost(){if(drag){drag.ghost.style.left=Math.max(6,Math.min(innerWidth-130,drag.x+12))+'px';drag.ghost.style.top=Math.max(6,drag.y-25)+'px'}}
+function hitDrag(){if(!drag)return;const hit=document.elementFromPoint(drag.x,drag.y),target=hit&&hit.closest('.tile');if(!target||target===drag.tile||!$('grid').contains(target))return;const a=channels.findIndex(c=>c.id===drag.id),b=channels.findIndex(c=>c.id===target.dataset.id),after=b>a;relative(drag.id,target.dataset.id,after);if(after)target.after(drag.tile);else target.before(drag.tile)}
+window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointer)return;e.preventDefault();drag.x=e.clientX;drag.y=e.clientY;placeGhost();hitDrag()},{passive:false});
+function endDrag(e){if(!drag||e&&e.pointerId!==drag.pointer)return;clearInterval(dragInterval);drag.ghost.remove();drag.tile.classList.remove('dragging');drag=null;persistOrder();render()}window.addEventListener('pointerup',endDrag);window.addEventListener('pointercancel',endDrag);window.addEventListener('blur',()=>{if(drag)endDrag()});
+$('edit').onclick=()=>{endDrag();editing=!editing;render()};$('resetOrder').onclick=()=>{if(!confirm('Вернуть основные каналы в исходный порядок?'))return;config.order=[];save();channels=sortChannels(channels);render()};
+function restoreCatalogCache(){if(channels.length)return true;try{const c=JSON.parse(localStorage.getItem(KEY+'.catalog')||'null');if(c&&c.url===config.url&&Array.isArray(c.channels)&&c.channels.length){channels=sortChannels(c.channels.filter(x=>x&&typeof x.id==='string'&&typeof x.name==='string').map(x=>({...x,categories:Array.isArray(x.categories)?x.categories:[],sources:Array.isArray(x.sources)?x.sources:[]})));version=c.version||'';const old=$('category').value;$('category').replaceChildren(new Option('Все категории',''));[...new Set(channels.flatMap(c=>c.categories))].sort((a,b)=>a.localeCompare(b,'ru')).forEach(c=>$('category').add(new Option(c,c)));$('category').value=old;render();diag.catalog='кэш: '+channels.length;return channels.length>0}}catch(e){}return false}
+async function catalogLoad(){if(catalogBusy||!config.token||Date.now()<catalogRetryAt)return;catalogBusy=true;const url=config.url,token=config.token;restoreCatalogCache();diag.catalog='обновление';try{const d=await read({action:'catalog',session:token},url);if(url!==config.url||token!==config.token)return;if(!Array.isArray(d.catalog)||!d.catalog.length){catalogRetryAt=Date.now()+15000;diag.catalog='сервер временно вернул пустой каталог; сохранён прежний список';if(!channels.length)restoreCatalogCache();if(!channels.length)msg('Каталог временно недоступен. Повторим запрос автоматически.');return}const incoming=d.catalog.filter(c=>c&&typeof c.id==='string'&&typeof c.name==='string').map(c=>({...c,categories:Array.isArray(c.categories)?c.categories:[],sources:Array.isArray(c.sources)?c.sources:[]}));if(!incoming.length){catalogRetryAt=Date.now()+15000;diag.catalog='получен некорректный каталог; старый список сохранён';return}if(channels.length&&incoming.length<Math.max(10,Math.floor(channels.length*.65))){catalogRetryAt=Date.now()+15000;diag.catalog='неполный ответ ('+incoming.length+' из '+channels.length+'); прежний список сохранён';return}channels=sortChannels(incoming);version=d.version||version;catalogRetryAt=0;const old=$('category').value;$('category').replaceChildren(new Option('Все категории',''));[...new Set(channels.flatMap(c=>c.categories))].sort((a,b)=>a.localeCompare(b,'ru')).forEach(c=>$('category').add(new Option(c,c)));$('category').value=old;if(!drag)render();update();diag.catalog='получен: '+channels.length;try{localStorage.setItem(KEY+'.catalog',JSON.stringify({url:config.url,channels,version}))}catch(e){}}catch(e){catalogRetryAt=Date.now()+15000;diag.catalog=e.message;if(!channels.length){restoreCatalogCache();if(!channels.length)msg('Каталог: '+e.message)}}finally{catalogBusy=false;diagnostics()}}
+function authProblem(reason){authBlocked=true;run++;clearTimeout(timer);connected=false;pending=null;update();msg('Проверка устройства не пройдена. Список каналов сохранён. '+reason);if($('settingsDialog').open){showGate();settingsMsg('Каналы сохранены. Введите PIN повторно, чтобы восстановить управление. '+reason)}}
+function forget(reason){authBlocked=false;run++;clearTimeout(timer);config.token='';save();state={};connected=false;pending=null;closePreview();restoreCatalogCache();render();logo($('nowLogo'),null);$('nowLogo').dataset.id='';update();msg(reason)}
+function wake(){if(authBlocked)return;urgent=true;clearTimeout(timer);if(!busy)tick()}
+async function tick(){if(busy||!config.token||authBlocked)return;busy=true;urgent=false;const g=run,start=performance.now();let delay=pending?900:2500;try{const d=await read({action:'status',session:config.token});if(g!==run)return;if(d.api!=='2.2')throw Error('VERSION: требуется опубликованный Code.gs 2.2');connected=true;state=d.state||{};failures=0;diag.statusMs=Math.round(performance.now()-start);diag.statusAt=new Date().toLocaleTimeString('ru-RU');diag.lastError='';
+if(state.state)noteStability(state.state);
+if(pending){if(state.ack&&state.ack.id===pending.id){const error=state.ack.status==='error',text=error?'Плеер: '+state.ack.message:'Компьютер обработал команду · '+(state.name||'канал');diag.commandStage=error?'ошибка плеера':'обработана плеером';msg(text);$('switchHint').textContent=text;pending=null}else if(d.received===pending.id){diag.commandStage='принята сервером, ожидается ПК';msg('Сервер принял команду. Ожидаем обработку компьютером.')}if(pending&&Date.now()-pending.at>65000){diag.commandStage='нет подтверждения за 65 секунд';msg('Нет подтверждения. Проверьте совпадение URL и ключа в ПК; смотрите диагностику связи.');$('switchHint').textContent='Нет подтверждения от ПК. Повторите после проверки подключения.';pending=null}}
+update();$('updated').textContent='Связь: '+diag.statusMs+' мс · '+diag.statusAt;
+if(!editing&&!drag&&(d.version!==version||!channels.length)&&d.version!=='updating')catalogLoad();
+}catch(e){if(g!==run)return;if(e.message.startsWith('AUTH:')){authProblem(e.message);return}connected=false;failures++;diag.lastError=e.message;delay=Math.min(30000,2000*2**Math.min(failures,4));msg(e.message);update()}finally{busy=false;if(g===run&&config.token){clearTimeout(timer);timer=setTimeout(tick,urgent?0:document.hidden?15000:delay)}else if(config.token&&urgent){timer=setTimeout(tick,0)}}}
+async function command(type,channelId=''){if(!online||pending||!config.token)return;const source=selected&&selected.sources[Number($('source').value)],sourceKey=type==='select'&&$('useSource').checked&&source?(source.key||(source.type==='rutube'?'rutube:'+source.id:source.url)):'';pending={id:'c_'+Date.now().toString(36)+'_'+homeUid().slice(0,16),at:Date.now()};const q={action:'command',session:config.token,id:pending.id,type,channelId,sourceKey};diag.commandStage='отправка';msg('Отправляем команду…');$('switchHint').textContent='Ожидаем приём сервером и подтверждение ПК.';update();try{await write(q);diag.commandStage='POST завершён, приём проверяется';wake()}catch(e){diag.commandStage='ошибка отправки: '+e.message;pending=null;msg(e.message);update()}}
+async function authenticate(url,pin){if(!homeValid(url))throw Error('Нужен полный URL Apps Script /exec');if(!/^\d{6,12}$/.test(pin))throw Error('Нужны 6–12 цифр PIN');const nonce=homeUid();await write({action:'login',pin,nonce,deviceId:config.deviceId,label:navigator.platform+' · '+navigator.userAgent.slice(0,65)},url);for(let i=0;i<8;i++){await sleep(i?1200:500);const d=await read({action:'loginResult',nonce},url);if(!d.pending){if(!d.persistent||!d.session)throw Error('Сервер не выдал постоянный ключ');return d}}throw Error('Нет ответа на вход. Проверьте развертывание.')}
+function showGate(){gateServer=config.url||DEFAULT_SERVER;optionsUnlocked=false;$('gate').hidden=false;$('options').hidden=true;$('firstUrl').hidden=true;$('bootstrapUrl').value=gateServer;$('pin').value='';$('serverPin').value='';settingsMsg('')}
+function showOptions(){optionsUnlocked=true;$('gate').hidden=true;$('options').hidden=false;$('serverUrl').value=config.url;$('enablePreview').checked=config.preview;$('mutePreview').checked=config.muted;diagnostics()}
+async function settings(){showGate();if(!$('settingsDialog').open)$('settingsDialog').showModal();if(authBlocked){settingsMsg('Каналы сохранены. Введите PIN повторно, чтобы восстановить управление.');return}if(config.token){$('gate').hidden=true;settingsMsg('Проверяем устройство…');try{await read({action:'status',session:config.token});if(!$('settingsDialog').open)return;showOptions();settingsMsg(config.url!==DEFAULT_SERVER?'Внимание: сохранённый сервер отличается от адреса в пакете. Сверьте его с ПК.':'Устройство подключено постоянно.')}catch(e){if(e.message.startsWith('AUTH:'))authProblem(e.message);else{showGate();settingsMsg(e.message+' Сохранённый ключ не удалён.')}}}else setTimeout(()=>$('pin').focus(),30)}
+$('settings').onclick=settings;$('connect').onclick=settings;$('closeSettings').onclick=()=>$('settingsDialog').close();$('settingsDialog').addEventListener('close',()=>{optionsUnlocked=false;$('options').hidden=true;$('pin').value='';$('serverPin').value='';$('serverUrl').value=''});$('otherServer').onclick=()=>{gateServer='';$('firstUrl').hidden=false;$('bootstrapUrl').focus()};
+function accepted(url,d){run++;const previousUrl=config.url;config.url=url;config.token=d.session;config.deviceId=d.deviceId;authBlocked=false;const saved=save();if(previousUrl!==url){channels=[];version='';}else{restoreCatalogCache()}state={};pending=null;connected=false;closePreview();render();showOptions();settingsMsg(saved?'Устройство запомнено.':'Хранилище браузера недоступно; вход может не сохраниться.');urgent=true;wake();catalogLoad()}
+$('gate').onsubmit=async e=>{e.preventDefault();const url=(gateServer||$('bootstrapUrl').value).trim(),pin=$('pin').value;$('unlock').disabled=true;settingsMsg('Проверяем PIN…');try{const d=await authenticate(url,pin);$('pin').value='';accepted(url,d)}catch(e){settingsMsg(e.message)}finally{$('unlock').disabled=false}};
+$('saveServer').onclick=async()=>{if(!optionsUnlocked)return;const url=$('serverUrl').value.trim();if(url===config.url){settingsMsg('Адрес сохранён.');return}$('saveServer').disabled=true;try{const d=await authenticate(url,$('serverPin').value);$('serverPin').value='';accepted(url,d)}catch(e){settingsMsg(e.message)}finally{$('saveServer').disabled=false}};
+$('defaultServer').onclick=()=>{$('serverUrl').value=DEFAULT_SERVER;settingsMsg('В поле указан сервер из пакета. Если адрес изменился, введите его PIN и нажмите «Сохранить».')};
+$('enablePreview').onchange=()=>{config.preview=$('enablePreview').checked;save()};$('mutePreview').onchange=()=>{config.muted=$('mutePreview').checked;save()};$('refresh').onclick=()=>{catalogLoad();settingsMsg('Каталог загружается отдельно; управление не приостанавливается.')};$('logout').onclick=async()=>{if(!confirm('Забыть устройство?'))return;try{await write({action:'logout',session:config.token})}catch(e){}forget('Устройство забыто.');$('settingsDialog').close()};$('copyDiagnostics').onclick=async()=>{try{await navigator.clipboard.writeText($('diagnostics').textContent);settingsMsg('Диагностика скопирована, секретных ключей в ней нет.')}catch(e){settingsMsg('Не удалось скопировать. Можно выделить текст диагностики вручную.')}};
+$('search').oninput=()=>{limit=120;render()};$('category').onchange=()=>{limit=120;render()};function filter(v){onlyFav=v;$('all').classList.toggle('on',!v);$('fav').classList.toggle('on',v);$('all').setAttribute('aria-pressed',String(!v));$('fav').setAttribute('aria-pressed',String(v));limit=120;render()}$('all').onclick=()=>filter(false);$('fav').onclick=()=>filter(true);$('more').onclick=()=>{limit+=120;render()};$('stop').onclick=()=>command('stop');$('switch').onclick=()=>{if(selected)command('select',selected.id)};
+let epoch=0,hls=null,dash=null,video=null,previewTimer=null,sourceIndex=0,previewKey='',libraries=new Map();
+let liveEpoch=0,liveHls=null,liveDash=null,liveVideo=null,liveTimer=null,liveKey='',stabilityHistory=[];
+function dispose(){epoch++;clearTimeout(previewTimer);if(hls){hls.destroy();hls=null}if(dash){try{dash.reset()}catch(e){}dash=null}if(video){video.pause();video.removeAttribute('src');video.load();video=null}$('screen').replaceChildren()}
+function disposeLive(){liveEpoch++;clearTimeout(liveTimer);if(liveHls){liveHls.destroy();liveHls=null}if(liveDash){try{liveDash.reset()}catch(e){}liveDash=null}if(liveVideo){liveVideo.pause();liveVideo.removeAttribute('src');liveVideo.load();liveVideo=null}$('liveScreen').replaceChildren();liveKey=''}
+function closePreview(){sourceRun++;dispose();if($('previewDialog').open)$('previewDialog').close()}
+function sourceKey(s){return s.key||(s.type==='rutube'?'rutube:'+s.id:s.url)}
+function sourceMenu(keep){$('source').replaceChildren();if(!selected)return;selected.sources.forEach((s,i)=>$('source').add(new Option('№'+(i+1)+' · '+(s.type||'HLS').toUpperCase()+(s.quality?' · '+s.quality:'')+(s.label?' · '+s.label:'')+(s.feed?' · '+s.feed:'')+(s.special?' · спец. заголовки':''),String(i))));$('source').disabled=selected.sources.length<2;const wanted=keep||config.preferred[selected.id],n=selected.sources.findIndex(s=>sourceKey(s)===wanted);$('source').value=String(n>=0?n:0)}
+async function sourcesLoad(force=false){if(!selected||!config.token)return;const c=selected,id=c.id,g=++sourceRun;const alive=()=>g===sourceRun&&selected&&selected.id===id&&$('previewDialog').open;const keep=c.sources[Number($('source').value)]?sourceKey(c.sources[Number($('source').value)]):'';$('sourceStatus').textContent='Получаем полный список источников…';diag.sources='загрузка '+c.name;
+try{let d=await read({action:'sources',session:config.token,channelId:id});if(!alive())return;if(force||!d.available||c.sourceRevision&&d.revision!==c.sourceRevision||c.sourceCount&&(!Array.isArray(d.sources)||d.sources.length<c.sourceCount)){const rid='r_'+Date.now().toString(36)+'_'+homeUid().slice(0,12);await write({action:'sourceRequest',session:config.token,id:rid,channelId:id,revision:c.sourceRevision||''});const end=Date.now()+65000;while(alive()&&Date.now()<end){await sleep(2000);if(!alive())return;d=await read({action:'sources',session:config.token,channelId:id});if(d.available&&d.publication&&d.publication.requestId===rid)break;$('sourceStatus').textContent='Ожидаем полный список от компьютера. Переключать канал уже можно.'}}
+if(!alive())return;if(!d.available)throw Error('ПК не опубликовал источники за отведённое время');c.sources=d.sources;const wanted=config.preferred[c.id]||keep;sourceMenu(wanted);$('sourceStatus').textContent='Доступно источников: '+c.sources.length+(c.sourceCount&&c.sources.length!==c.sourceCount?' (каталог ещё синхронизируется)':'');diag.sources=c.name+': '+c.sources.length;const nowSource=selected.sources[Number($('source').value)];if(config.preview&&nowSource&&sourceKey(nowSource)!==previewKey)playPreview(Number($('source').value));diagnostics()}catch(e){if(alive()){$('sourceStatus').textContent='Источники: '+e.message;diag.sources=e.message;diagnostics()}}}
+function openPreview(c){selected=c;sourceIndex=0;$('previewTitle').textContent=c.name;logo($('previewLogo'),c);$('useSource').checked=true;sourceMenu();$('switchHint').textContent='На компьютер будет передан выбранный источник. Если список ещё загружается, можно переключить канал на источнике, выбранном в самом ТВ-плеере.';if(!$('previewDialog').open)$('previewDialog').showModal();update();playPreview(Number($('source').value));sourcesLoad()}
+function library(kind){const test=()=>kind==='hls'?window.Hls:window.dashjs;if(test())return Promise.resolve();if(libraries.has(kind))return libraries.get(kind);const p=new Promise((resolve,reject)=>{const s=document.createElement('script'),t=setTimeout(()=>{s.remove();libraries.delete(kind);reject(Error('Библиотека не загрузилась'))},18000);s.src=kind==='hls'?'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js':'https://cdn.jsdelivr.net/npm/dashjs@4.7.4/dist/dash.all.min.js';s.onload=()=>{clearTimeout(t);if(test())resolve();else{libraries.delete(kind);reject(Error('Библиотека недоступна'))}};s.onerror=()=>{clearTimeout(t);s.remove();libraries.delete(kind);reject(Error('Ошибка загрузки библиотеки'))};document.head.append(s)});libraries.set(kind,p);return p}
+async function playPreview(i){dispose();sourceIndex=i;$('source').value=String(i);const e=epoch,c=selected,s=c&&c.sources[i],alive=()=>e===epoch&&$('previewDialog').open,fail=t=>{if(alive()){clearTimeout(previewTimer);$('previewNote').textContent=t+' Переключение ПК доступно и без предпросмотра.'}};previewKey=s?sourceKey(s):'';if(!config.preview){$('previewNote').textContent='Предпросмотр отключён в настройках пульта. Включите его в Настройки → Предпросмотр эфира.';return}if(!s){$('previewNote').textContent='Ожидаем источник от компьютера.';return}$('previewNote').textContent=s.special?'Источник требует специальных заголовков: браузер может не открыть его.':'Подключаем эфир на этом устройстве…';if(['rutube','embed'].includes(s.type)){const url=s.type==='rutube'?'https://rutube.ru/play/embed/'+s.id+'/?q=240&autoplay=true&muted='+(config.muted?'true':'false'):s.url;if(!/^https?:\/\//i.test(url)){fail('Некорректный URL.');return}const f=document.createElement('iframe');f.title=c.name+' — эфир';f.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';f.allowFullscreen=true;f.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation');f.referrerPolicy='strict-origin-when-cross-origin';f.src=url;$('screen').append(f);$('previewNote').textContent='При необходимости нажмите Play внутри плеера источника.';return}const v=document.createElement('video');video=v;v.controls=true;v.playsInline=true;v.muted=config.muted;v.preload='none';$('screen').append(v);v.addEventListener('playing',()=>{if(alive()){clearTimeout(previewTimer);$('previewNote').textContent='Предпросмотр на этом устройстве. ПК пока не переключён.'}});v.addEventListener('error',()=>fail('Поток не открылся: формат, CORS или ограничение источника.'));previewTimer=setTimeout(()=>fail('Нет подтверждения запуска за 25 секунд.'),25000);
+async function play(){if(!alive())return;try{await v.play()}catch(err){if(alive()){clearTimeout(previewTimer);$('previewNote').textContent=err.name==='NotAllowedError'?'Нажмите Play в окне видео.':err.message}}}
+try{if(s.type==='dash'){await library('dash');if(!alive())return;const d=dashjs.MediaPlayer().create();dash=d;d.updateSettings({streaming:{buffer:{bufferTimeDefault:8,stableBufferTime:8},abr:{initialBitrate:{video:250},maxBitrate:{video:700}}}});d.on(dashjs.MediaPlayer.events.ERROR,()=>fail('DASH недоступен.'));d.initialize(v,s.url,false);play();return}if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=s.url;play();return}await library('hls');if(!alive())return;if(!Hls.isSupported()){fail('HLS не поддерживается.');return}const p=new Hls({enableWorker:true,lowLatencyMode:false,startLevel:0,maxBufferLength:10,maxMaxBufferLength:15,backBufferLength:0,maxBufferSize:8000000,capLevelToPlayerSize:true,abrEwmaDefaultEstimate:300000});hls=p;p.on(Hls.Events.MEDIA_ATTACHED,()=>{if(alive())p.loadSource(s.url)});p.on(Hls.Events.MANIFEST_PARSED,()=>{if(!alive())return;const a=p.levels.map((l,i)=>({i,h:l.height||0,b:l.bitrate||Infinity})).sort((a,b)=>a.b-b.b);if(a.length){p.startLevel=a[0].i;const low=a.filter(l=>l.h<=480);p.autoLevelCapping=low.length?Math.max(...low.map(l=>l.i)):a[0].i}play()});p.on(Hls.Events.ERROR,(_,err)=>{if(err.fatal){fail('HLS недоступен.');if(hls===p){p.destroy();hls=null}}});p.attachMedia(v)}catch(err){fail(err.message)}}
+function isUnstable(){const now=Date.now();while(stabilityHistory.length&&now-stabilityHistory[0].t>120000)stabilityHistory.shift();let changes=0;for(let i=1;i<stabilityHistory.length;i++)if(stabilityHistory[i].s!==stabilityHistory[i-1].s)changes++;return changes>=4}
+function noteStability(s){stabilityHistory.push({t:Date.now(),s});if(stabilityHistory.length>60)stabilityHistory.shift()}
+async function playLive(c){disposeLive();const e=liveEpoch;if(!c||!c.sources||!c.sources.length){$('liveScreen').replaceChildren();return}const s=c.sources[0];liveKey=sourceKey(s);if(['rutube','embed'].includes(s.type)){const url=s.type==='rutube'?'https://rutube.ru/play/embed/'+s.id+'/?q=240&autoplay=true&muted=true':s.url;if(!/^https?:\/\//i.test(url))return;const f=document.createElement('iframe');f.title=c.name+' — эфир';f.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';f.allowFullscreen=true;f.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation');f.referrerPolicy='strict-origin-when-cross-origin';f.src=url;$('liveScreen').append(f);return}const v=document.createElement('video');liveVideo=v;v.playsInline=true;v.muted=true;v.autoplay=true;v.controls=false;$('liveScreen').append(v);const play=()=>{v.play().catch(()=>{})};
+try{if(s.type==='dash'){await library('dash');if(e!==liveEpoch)return;const d=dashjs.MediaPlayer().create();liveDash=d;d.updateSettings({streaming:{buffer:{bufferTimeDefault:8,stableBufferTime:8},abr:{initialBitrate:{video:250},maxBitrate:{video:700}}}});d.on(dashjs.MediaPlayer.events.ERROR,()=>{});d.initialize(v,s.url,false);play();return}if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=s.url;play();return}await library('hls');if(e!==liveEpoch)return;if(!Hls.isSupported())return;const p=new Hls({enableWorker:true,lowLatencyMode:false,startLevel:0,maxBufferLength:10,maxMaxBufferLength:15,backBufferLength:0,maxBufferSize:8000000,capLevelToPlayerSize:true,abrEwmaDefaultEstimate:300000});liveHls=p;p.on(Hls.Events.MEDIA_ATTACHED,()=>{if(e===liveEpoch)p.loadSource(s.url)});p.on(Hls.Events.MANIFEST_PARSED,()=>{if(e!==liveEpoch)return;const a=p.levels.map((l,i)=>({i,h:l.height||0,b:l.bitrate||Infinity})).sort((a,b)=>a.b-b.b);if(a.length){p.startLevel=a[0].i;const low=a.filter(l=>l.h<=480);p.autoLevelCapping=low.length?Math.max(...low.map(l=>l.i)):a[0].i}play()});p.on(Hls.Events.ERROR,(_,err)=>{if(err.fatal&&liveHls===p){p.destroy();liveHls=null}});p.attachMedia(v)}catch(err){}}
+$('closePreview').onclick=closePreview;$('previewDialog').addEventListener('close',()=>{sourceRun++;dispose()});$('source').onchange=()=>{if(selected){const s=selected.sources[Number($('source').value)];if(s){config.preferred[selected.id]=sourceKey(s);save();$('useSource').checked=true;$('switchHint').textContent='Выбранный источник будет передан на компьютер вместе с командой.'}}playPreview(Number($('source').value))};$('retry').onclick=()=>playPreview(Number($('source').value));$('allSources').onclick=()=>sourcesLoad(true);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&$('previewDialog').open){dispose();$('previewNote').textContent='Предпросмотр остановлен в фоне. Нажмите «Повторить».'}if(!document.hidden&&config.token)wake()});
+window.addEventListener('pagehide',()=>{dispose();disposeLive();sourceRun++;run++;clearTimeout(timer)});
+window.addEventListener('pageshow',e=>{if(e.persisted&&config.token)wake()});
+try{const cached=JSON.parse(localStorage.getItem(KEY+'.catalog')||'null');if(cached&&config.token&&cached.url===config.url){channels=sortChannels(cached.channels);version=cached.version}}catch(e){}
+render();update();if(config.token&&homeValid(config.url)){if(config.url!==DEFAULT_SERVER)msg('Сохранённый сервер отличается от сервера в пакете. Сверьте URL в настройках и на ПК.');wake();catalogLoad()}else msg('Войдите по PIN один раз. Сервер из пакета уже указан.');
+</script>
+<script>
+if('serviceWorker' in navigator && location.protocol==='https:'){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./efir-pult-sw.js',{scope:'./'}).catch(()=>{}),{once:true});
+}
+</script>
+</body>
+</html>
