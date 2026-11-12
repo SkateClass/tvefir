@@ -1,12 +1,12 @@
 {
-  "id": "./efir-pwa.html",
+  "id": "/tvefir/pult.html",
   "name": "ЭФИР HOME — пульт",
-  "short_name": "ЭФИР",
-  "description": "Домашнее телевидение — пульт управления",
+  "short_name": "ЭФИР Пульт",
+  "description": "Пульт управления компьютерным плеером ЭФИР",
   "lang": "ru",
   "dir": "ltr",
-  "start_url": "./efir-pwa.html",
-  "scope": "./",
+  "start_url": "/tvefir/pult.html",
+  "scope": "/tvefir/",
   "display": "standalone",
   "background_color": "#0b0b10",
   "theme_color": "#0b0b10",
@@ -14,22 +14,16 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./efir-icon-192.png",
+      "src": "/tvefir/efir-pult-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./efir-icon-512.png",
+      "src": "/tvefir/efir-pult-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "./efir-icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
