@@ -58,7 +58,7 @@ p{margin:6px 0}
 .screen-mini:empty:after{content:'Эфир';display:grid;place-items:center;height:100%;color:#777482;font-size:12px}
 .live-status{font-size:11px;color:#cbbaff;min-height:18px;margin-top:4px}
 .live-status.bad{color:#ffc2cc}
-.live-status.warn{color:#ffd479}
+.live-status.warn{color:#ffd479}.remote-health{display:flex;align-items:center;gap:12px;min-height:15px;margin-top:3px;flex-wrap:wrap}.remote-health-item{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#9b9aa9}.remote-health-item i{width:7px;height:7px;display:inline-block;border-radius:50%;background:#777;box-shadow:0 0 0 2px #ffffff10}.remote-health-item.green i{background:#35d39a;box-shadow:0 0 7px #35d39a66}.remote-health-item.gray i{background:#8c8c98}.remote-health-item.red i{background:#ff5368;box-shadow:0 0 7px #ff536866}.remote-health-item.orange i{background:#ffad42;box-shadow:0 0 7px #ffad4266}.remote-health-item.excellent i,.remote-health-item.good i{background:#35d39a}.remote-health-item.weak i{background:#ffad42}.remote-health-item.unknown i{background:#777}
 .heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:24px 0 14px}
 .heading p{font-size:11px;color:var(--muted)}
 .tools{display:grid;grid-template-columns:1fr 190px auto;gap:10px}
@@ -189,6 +189,7 @@ dialog::backdrop{background:#030309cc;backdrop-filter:blur(6px)}
 <div class="eyebrow">Телевизор · компьютер</div>
 <h1 id="nowTitle">Ваш домашний эфир</h1>
 <p id="nowState">Подключаемся…</p>
+<div class="remote-health"><span id="remotePlayHealth" class="remote-health-item gray"><i></i><b>Плеер: ожидание</b></span><span id="remoteNetHealth" class="remote-health-item unknown"><i></i><b>Интернет: —</b></span></div>
 <p id="liveStatus" class="live-status"></p>
 </div>
 <div class="screen-mini" id="liveScreen"></div>
@@ -358,7 +359,7 @@ const msg=t=>$('message').textContent=t,settingsMsg=t=>$('settingsMsg').textCont
 function diagnostics(){const u=config.url.split('/s/')[1]||'';$('diagnostics').textContent=JSON.stringify({...diag,server:u.slice(0,16)+'…'+u.slice(-10),playerName:state.name||'',playerState:state.state||'',playerAgeSeconds:state.at?Math.max(0,Math.round((Date.now()-state.at)/1000)):null,channelCount:channels.length,authBlocked},null,2)}
 function logo(node,c){node.replaceChildren();const t=document.createElement('span');t.className='initial';t.textContent=c?c.name.split(/\s+/).map(x=>x[0]).join('').slice(0,3):'ТВ';node.append(t);if(c&&/^https?:\/\//i.test(c.logo||'')){const i=document.createElement('img');i.alt='';i.loading='lazy';i.decoding='async';i.referrerPolicy='no-referrer';i.onload=()=>t.hidden=true;i.onerror=()=>i.remove();i.src=c.logo;node.append(i)}}
 function highlight(){for(const [id,t] of tileMap){const same=id===state.id;t.classList.toggle('current',same);t.classList.toggle('last',same&&(!online||state.stopped));t.querySelector('.tag').textContent=online&&!state.stopped?'НА КОМПЬЮТЕРЕ':'ПОСЛЕДНИЙ';t.querySelector('.tile-open').setAttribute('aria-label',t.dataset.name+(same?' — выбран на компьютере':'')+'; предпросмотр')}}
-function update(){online=connected&&!!state.at&&Date.now()-state.at<90000;$('network').textContent=online?'ТВ на связи':config.token?'ТВ не отвечает':'Нужен PIN';$('network').classList.toggle('online',online);$('nowTitle').textContent=state.name||'Ваш домашний эфир';const names={playing:'Воспроизведение',loading:'Подключение',waiting:'Буферизация',paused:'Пауза'};let txt=!config.token?'Войдите по PIN один раз':!online?'Проверьте подключение ПК к этому же серверу':state.stopped?'Воспроизведение остановлено':names[state.state]||state.state||'Ожидаем канал';const unstable=isUnstable();if(online&&!state.stopped&&unstable){txt+=' · нестабильная работа трансляции';$('liveStatus').textContent='Нестабильная работа трансляции: частые кратковременные остановки.';$('liveStatus').className='live-status warn'}else if(online&&!state.stopped){$('liveStatus').textContent='Трансляция активна.';$('liveStatus').className='live-status'}else{$('liveStatus').textContent='';$('liveStatus').className='live-status'}
+function update(){online=connected&&!!state.at&&Date.now()-state.at<90000;$('network').textContent=online?'ТВ на связи':config.token?'ТВ не отвечает':'Нужен PIN';$('network').classList.toggle('online',online);$('nowTitle').textContent=state.name||'Ваш домашний эфир';const ph=!online?'red':(state.health||((state.state==='playing'&&!state.stopped)?'green':(['loading','waiting'].includes(state.state)?'gray':'red')));const pn=online&&state.internet?state.internet.quality||'unknown':'unknown';const pLabels={green:'Плеер: работает',gray:'Плеер: загрузка',red:'Плеер: остановлен',orange:'Плеер: нестабильно'};const nLabels={excellent:'Интернет: отлично',good:'Интернет: хорошо',weak:'Интернет: слабый',unknown:'Интернет: —'};for(const [id,cls,label] of [['remotePlayHealth',ph,pLabels[ph]||'Плеер: —'],['remoteNetHealth',pn,nLabels[pn]||'Интернет: —']]){const el=$(id);el.className='remote-health-item '+cls;el.querySelector('b').textContent=label}const names={playing:'Воспроизведение',loading:'Подключение',waiting:'Буферизация',retry:'Перезапуск источника',paused:'Пауза'};let txt=!config.token?'Войдите по PIN один раз':!online?'Проверьте подключение ПК к этому же серверу':state.stopped?'Воспроизведение остановлено':names[state.state]||state.state||'Ожидаем канал';const unstable=isUnstable();if(online&&!state.stopped&&unstable){txt+=' · нестабильная работа трансляции';$('liveStatus').textContent='Нестабильная работа трансляции: частые кратковременные остановки.';$('liveStatus').className='live-status warn'}else if(online&&!state.stopped){$('liveStatus').textContent='Трансляция активна.';$('liveStatus').className='live-status'}else{$('liveStatus').textContent='';$('liveStatus').className='live-status'}
 $('nowState').textContent=txt;const c=channels.find(c=>c.id===state.id);if($('nowLogo').dataset.id!==(c?c.id:'')){$('nowLogo').dataset.id=c?c.id:'';logo($('nowLogo'),c);playLive(c)}$('stop').disabled=!online||!!pending;$('switch').disabled=!online||!selected||!!pending;$('switch').textContent=pending?'Ожидаем подтверждение…':'Переключить на компьютере';if(selected)$('previewSub').textContent=selected.id===state.id?'Этот канал выбран на компьютере':'Компьютер пока не переключён';highlight();diagnostics()}
 function filtered(){const q=norm($('search').value),cat=$('category').value;return channels.filter(c=>(!q||norm(c.name).includes(q))&&(!cat||c.categories.includes(cat))&&(!onlyFav||c.favorite))}
 function render(){const list=filtered();$('count').textContent='Каналов: '+list.length;$('grid').replaceChildren();tileMap.clear();const f=document.createDocumentFragment();list.slice(0,limit).forEach(c=>{const tile=document.createElement('article');tile.className='tile';tile.dataset.id=c.id;tile.dataset.name=c.name;const tag=document.createElement('span');tag.className='tag';const b=document.createElement('button');b.className='tile-open';b.disabled=editing;const l=document.createElement('div');l.className='logo';logo(l,c);const n=document.createElement('span');n.className='name';n.textContent=c.name;b.append(l,n);if(Number(c.sourceCount)>0){const sc=document.createElement('span');sc.className='source-count';sc.textContent=Number(c.sourceCount)+' источн.';b.append(sc)}b.onclick=()=>openPreview(c);tile.append(tag,b);const ep=document.createElement('div');ep.innerHTML=epgMarkup(c);tile.append(ep.firstElementChild||ep);if(editing){const box=document.createElement('div');box.className='edit-controls';const handle=document.createElement('button');handle.className='handle';handle.textContent='⠿';handle.title='Перетащить '+c.name;handle.setAttribute('aria-label',handle.title);handle.onpointerdown=e=>beginDrag(e,c.id);handle.onkeydown=e=>{if(['ArrowUp','ArrowLeft','ArrowDown','ArrowRight'].includes(e.key)){e.preventDefault();moveStep(c.id,['ArrowUp','ArrowLeft'].includes(e.key)?-1:1)}};const up=document.createElement('button');up.textContent='↑';up.title='Раньше';up.onclick=()=>moveStep(c.id,-1);const down=document.createElement('button');down.textContent='↓';down.title='Дальше';down.onclick=()=>moveStep(c.id,1);const top=document.createElement('button');top.textContent='В начало';top.onclick=()=>{channels=channels.filter(x=>x.id!==c.id);channels.unshift(c);persistOrder();render()};box.append(handle,up,down,top);tile.append(box)}tileMap.set(c.id,tile);f.append(tile)});$('grid').append(f);$('more').hidden=list.length<=limit;$('empty').hidden=channels.length>0;$('editHelp').hidden=!editing;$('edit').classList.toggle('on',editing);$('edit').textContent=editing?'Готово':'Изменить порядок';highlight()}
@@ -426,45 +427,5 @@ if('serviceWorker' in navigator && location.protocol==='https:'){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./efir-pult-sw.js',{scope:'./'}).catch(()=>{}),{once:true});
 }
 </script>
-<!-- EFIR_PC_STATUS_START -->
-<style>
-#efirPcStatus{display:flex;align-items:center;gap:7px;font-size:11px;margin-top:5px;color:#a6a4ae}
-#efirPcStatus .efir-dot{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
-#efirPcStatus[data-tone="green"]{color:#49d98b}#efirPcStatus[data-tone="gray"]{color:#a6a4ae}
-#efirPcStatus[data-tone="red"]{color:#ff6279}#efirPcStatus[data-tone="orange"]{color:#ffb54c}
-#nowState.efir-green{color:#49d98b}#nowState.efir-gray{color:#a6a4ae}#nowState.efir-red{color:#ff6279}#nowState.efir-orange{color:#ffb54c}
-</style>
-<script>
-(()=>{'use strict';
-let previous='',channel='',since=Date.now(),stalls=[],lastServerAt=0;
-const host=document.querySelector('.hero .copy');if(!host||document.getElementById('efirPcStatus'))return;
-const line=document.createElement('div');line.id='efirPcStatus';line.setAttribute('role','status');line.setAttribute('aria-live','polite');
-const dot=document.createElement('span');dot.className='efir-dot';dot.setAttribute('aria-hidden','true');
-const label=document.createElement('span');line.append(dot,label);host.append(line);
-function draw(tone,text){line.dataset.tone=tone;label.textContent='ПК · '+text;const el=document.getElementById('nowState');if(el){el.classList.remove('efir-green','efir-gray','efir-red','efir-orange');el.classList.add('efir-'+tone)}}
-function refresh(){
- if(typeof state==='undefined'||typeof config==='undefined'){draw('gray','ожидаем состояние плеера');return}
- const now=Date.now(),s=state||{},mode=String(s.state||'').toLowerCase(),id=String(s.id||''),at=Number(s.at)||0;
- if(channel!==id){channel=id;previous='';since=now;stalls=[];lastServerAt=0}
- if(mode!==previous){if(mode==='waiting'&&previous==='playing')stalls.push(now);since=now;previous=mode}
- stalls=stalls.filter(t=>now-t<120000);lastServerAt=Math.max(lastServerAt,at);
- if(!config.token){draw('gray','нужен вход по PIN');return}
- if(typeof authBlocked!=='undefined'&&authBlocked){draw('red','нет доступа — войдите по PIN');return}
- if(!at){draw('gray','ожидаем данные от плеера');return}
- if(now-at>90000){draw('red','нет свежих данных от ПК');return}
- if(typeof connected!=='undefined'&&!connected){draw('red','связь потеряна — состояние не подтверждено');return}
- if(s.stopped||['paused','stopped','ended','error','failed','stalled','retrying','reconnecting','recovering'].includes(mode)){
- draw('red',s.stopped?'воспроизведение остановлено':({paused:'пауза',error:'ошибка воспроизведения',stalled:'зависание',retrying:'повторный запуск',reconnecting:'переподключение',recovering:'восстановление'})[mode]||'воспроизведение остановлено или восстанавливается');return}
- if(mode==='loading'||mode==='waiting'){
- if(now-since>=15000){draw('red',mode==='waiting'?'длительная буферизация — возможное зависание':'длительное подключение');return}
- draw(stalls.length>=3?'orange':'gray',stalls.length>=3?'частые остановки / буферизация':mode==='loading'?'загрузка':'буферизация');return}
- if(mode==='playing'){draw(stalls.length>=3?'orange':'green',stalls.length>=3?'воспроизведение с частыми остановками':'воспроизведение');return}
- draw('gray','ожидаем подтверждения воспроизведения');
-}
-if(typeof update==='function'){const original=update;update=function(){const result=original.apply(this,arguments);refresh();return result}}
-setInterval(()=>{if(!document.hidden)refresh()},1000);document.addEventListener('visibilitychange',refresh);refresh();
-})();
-</script>
-<!-- EFIR_PC_STATUS_END -->
 </body>
 </html>
