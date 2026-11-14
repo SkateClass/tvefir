@@ -115,6 +115,7 @@ dialog::backdrop{background:#03030920;backdrop-filter:blur(1px)}
 .settings-msg{font-size:12px;color:#cebbff;overflow-wrap:anywhere;margin-top:12px;min-height:22px}
 pre{font:11px/1.6 monospace;background:#08080e;padding:10px;border-radius:10px;max-height:180px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
 .source-status{font-size:11px;color:#b8d8ee;min-height:20px}
+/* EPG: компактная телепрограмма в карточке канала */
 .epg{width:100%;text-align:left;margin-top:8px;padding:8px 9px 7px;border-top:1px solid #ffffff12;background:linear-gradient(110deg,#ffffff08,#7b61ff0a);border-radius:0 0 13px 13px;min-height:78px}
 .epg-now{font-size:10px;font-weight:700;line-height:1.35;color:#f3efff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:27px}
 .epg-meta{display:flex;justify-content:space-between;gap:6px;color:#a9a3ba;font-size:9px;margin-top:3px;font-variant-numeric:tabular-nums}
@@ -130,6 +131,7 @@ pre{font:11px/1.6 monospace;background:#08080e;padding:10px;border-radius:10px;m
 .heading-actions{display:flex;gap:8px;align-items:center}.heading-actions button{white-space:nowrap}
 .guide-list{display:grid;gap:8px;margin-top:12px}.guide-item{display:grid;grid-template-columns:54px 1fr;gap:10px;padding:11px;border:1px solid #ffffff14;background:#ffffff07;border-radius:12px}.guide-time{font-size:11px;color:#aaa4bd;font-variant-numeric:tabular-nums;padding-top:2px}.guide-title{font-size:13px;font-weight:650;color:#f4f0ff;line-height:1.35}.guide-item.current{border-color:#8b72ff88;background:#8b72ff12}.guide-item.current .guide-title:after{content:'СЕЙЧАС';display:inline-block;margin-left:7px;font-size:8px;color:#b6a4ff;letter-spacing:.06em}.guide-desc{font-size:10px;color:#9c96ad;margin-top:4px;line-height:1.4}.guide-empty{padding:16px 4px;color:#9993a8;font-size:12px}
 @media(max-width:460px){.epg{padding:7px 6px 6px;min-height:76px}.epg-now{font-size:9px}.epg-next{font-size:8px}.epg-meta{font-size:8px}}
+
 .check{display:flex;align-items:center;gap:8px;font-size:12px}
 .check input{width:18px;min-height:18px;accent-color:#9174ff}
 @media(max-width:700px){
@@ -262,9 +264,9 @@ dialog::backdrop{background:#030309cc;backdrop-filter:blur(6px)}
 <div class="setting"><div>Начинать без звука</div><input id="mutePreview" type="checkbox" aria-label="Без звука"></div>
 <div class="row"><button id="refresh">Обновить каталог</button><button id="logout" class="danger">Забыть устройство</button></div>
 <h2 style="font-size:15px;margin-top:20px">Телепрограмма · Санкт-Петербург</h2>
-<div class="epg-foot">Расписание загружается автоматически. Сначала используется guide.json рядом с пультом; если его нет — публичный XMLTV-фид. Время — московское.</div>
+<div class="epg-foot">Расписание обновляется автоматически и публикуется вместе с пультом. Источники: Яндекс, Mail и российские XMLTV-фиды. Время — московское.</div>
 <div class="row"><button id="loadEpg" type="button">Обновить программу</button><button id="guideOpenSettings" type="button">Открыть телегид</button></div>
-<div class="source-status" id="epgStatus">Ожидаем загрузку телепрограммы</div>
+<div class="source-status" id="epgStatus">Ожидаем guide.json на этом сайте</div>
 <h2 style="font-size:15px;margin-top:20px">Диагностика связи</h2>
 <pre id="diagnostics"></pre>
 <button id="copyDiagnostics" class="wide">Скопировать диагностику без ключей</button>
@@ -293,229 +295,60 @@ const ORDER=['Первый канал','Россия 1','НТВ','Пятый к�
 const norm=s=>String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[^а-яa-z0-9]/g,'');
 const ALIASES=[['Первый канал','Channel One','ChannelOne','Perviy Kanal','1TV'],['Россия 1','Russia 1','Rossiya 1'],['НТВ','NTV'],['Пятый канал','5 канал','5 Kanal','Pyatyy Kanal','Channel 5 Russia'],['РЕН ТВ','REN TV'],['СТС','STS','CTC'],['ТНТ','TNT'],['Звезда','Zvezda'],['ТВЦ','ТВ Центр','TV Centre','TV Center','TV Tsentr'],['Россия 24','Russia 24','Rossiya 24'],['ТНТ-4','TNT4'],['МИР','Mir'],['Москва 24','Moskva 24','Moscow 24'],['Россия Культура','Rossiya K','Russia K','Россия К'],['ОТР','OTR'],['Пятница!','Pyatnitsa!','Friday!']];
 
-// EPG: сначала локальный guide.json, затем публичные XMLTV-фиды.
+// EPG: готовый guide.json публикуется рядом с pult.html на GitHub Pages.
+// Вся загрузка выполняется с того же домена, без CORS-прокси и разбора XML на телефоне.
 const GUIDE_URL=new URL('guide.json',location.href).toString();
-const EPG_XML_SOURCES=[
-  'https://iptvx.one/EPG_LITE',
-  'https://iptvx.one/EPG'
-];
-const EPG_PROXY=[
-  u=>u,
-  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)
-];
-
 let epgChannels=new Map(),epgPrograms=new Map(),epgLoadedAt=0,epgProgramCount=0,epgBusy=false,epgError='',epgRegion='Санкт-Петербург',epgSources=[];
 try{const cached=sessionStorage.getItem('efir.guide.cache.v1');if(cached){const d=JSON.parse(cached);epgInstallGuide(d,false)}}catch(e){}
-
 function epgNorm(v){return norm(String(v||'').replace(/\b(hd|fhd|uhd|4k|sd)\b/gi,''))}
 function epgAlias(name){const n=epgNorm(name);for(const a of ALIASES){if(a.some(x=>epgNorm(x)===n))return epgNorm(a[0])}return n}
 function epgSetStatus(t){const e=$('epgStatus');if(e)e.textContent=t}
 function epgRenderState(){if(!editing&&!drag)render()}
-
 function epgInstallGuide(d,cache=true){
-  if(d&&d.schema===1&&Array.isArray(d.channels)){
-    const ch=new Map(),pr=new Map();let count=0;
-    for(const c of d.channels){
-      if(!c||!c.id||!Array.isArray(c.programmes))continue;
-      ch.set(String(c.id),Array.isArray(c.names)?c.names:[]);
-      const a=c.programmes.filter(p=>p&&Number(p.start)&&Number(p.stop)&&p.title).map(p=>({start:Number(p.start),stop:Number(p.stop),title:String(p.title),desc:String(p.desc||'')})).sort((a,b)=>a.start-b.start);
-      if(a.length){pr.set(String(c.id),a);count+=a.length}
-    }
-    if(!pr.size)throw Error('В guide.json нет расписания передач');
-    epgChannels=ch;epgPrograms=pr;epgLoadedAt=Number(d.generatedAt)||Date.now();epgProgramCount=count;epgRegion=d.region||'Санкт-Петербург';epgSources=Array.isArray(d.sources)?d.sources:[];epgError='';
-    if(cache){try{sessionStorage.setItem('efir.guide.cache.v1',JSON.stringify(d))}catch(e){}}
-    return {channels:pr.size,programmes:count};
-  }
-
-  const doc=d&&d.documentElement?d:null;
-  if(!doc||doc.documentElement.tagName!=='tv')throw Error('Не удалось распознать EPG-фид');
-
-  const ch=new Map(),pr=new Map();let count=0;
-  for(const node of doc.getElementsByTagName('channel')){
-    const id=node.getAttribute('id');
-    if(!id)continue;
-    const names=[...node.getElementsByTagName('display-name')].map(x=>x.textContent.trim()).filter(Boolean);
-    ch.set(id,names);
-  }
-  for(const p of doc.getElementsByTagName('programme')){
-    const id=p.getAttribute('channel'),start=epgXmlTime(p.getAttribute('start')),stop=epgXmlTime(p.getAttribute('stop'));
-    const titleNode=p.getElementsByTagName('title')[0],descNode=p.getElementsByTagName('desc')[0];
-    const title=titleNode?titleNode.textContent.trim():'';
-    if(!id||!start||!stop||stop<=start||!title)continue;
-    if(!pr.has(id))pr.set(id,[]);
-    pr.get(id).push({start,stop,title,desc:descNode?descNode.textContent.trim():''});
-    count++;
-  }
-  for(const arr of pr.values())arr.sort((a,b)=>a.start-b.start);
-  if(!pr.size)throw Error('В EPG-фиде не найдено передач');
-
-  epgChannels=ch;epgPrograms=pr;epgLoadedAt=Date.now();epgProgramCount=count;epgRegion='Санкт-Петербург';epgSources=[];epgError='';
-
-  const compact={schema:1,generatedAt:epgLoadedAt,region:epgRegion,sources:[],channels:[]};
-  for(const [id,names] of ch){
-    const programmes=pr.get(id)||[];
-    if(programmes.length)compact.channels.push({id,names,programmes:programmes.slice(0,400)});
-  }
-  try{sessionStorage.setItem('efir.guide.cache.v1',JSON.stringify(compact))}catch(e){}
-  return {channels:pr.size,programmes:count};
+ if(!d||d.schema!==1||!Array.isArray(d.channels))throw Error('Файл guide.json имеет неизвестный формат');
+ const ch=new Map(),pr=new Map();let count=0;
+ for(const c of d.channels){if(!c||!c.id||!Array.isArray(c.programmes))continue;ch.set(String(c.id),Array.isArray(c.names)?c.names:[]);const a=c.programmes.filter(p=>p&&Number(p.start)&&Number(p.stop)&&p.title).map(p=>({start:Number(p.start),stop:Number(p.stop),title:String(p.title),desc:String(p.desc||'')})).sort((a,b)=>a.start-b.start);if(a.length){pr.set(String(c.id),a);count+=a.length}}
+ if(!pr.size)throw Error('В guide.json нет расписания передач');
+ epgChannels=ch;epgPrograms=pr;epgLoadedAt=Number(d.generatedAt)||Date.now();epgProgramCount=count;epgRegion=d.region||'Санкт-Петербург';epgSources=Array.isArray(d.sources)?d.sources:[];epgError='';
+ if(cache){try{sessionStorage.setItem('efir.guide.cache.v1',JSON.stringify(d))}catch(e){}}
+ return {channels:pr.size,programmes:count};
 }
-
-function epgXmlTime(v){
-  const m=String(v||'').match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\s*([+-]\d{4})?/);
-  if(!m)return 0;
-  const iso=`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}${m[7]?'':'Z'}`;
-  const t=Date.parse(m[7]?iso:iso+'Z');
-  return isNaN(t)?0:t;
-}
-
 function epgMatchChannel(c){
-  const wanted=new Set([c.name,...(c.epgAliases||[]),c.tvgId||'',c.xmltvId||''].filter(Boolean).map(epgAlias));
-  let best=null,scoreBest=0;
-  for(const [id,labels] of epgChannels){
-    const variants=[id,...labels].map(epgAlias);
-    let score=0;
-    for(const v of variants){
-      if(wanted.has(v))score=Math.max(score,100);
-      for(const w of wanted){
-        if(v&&w&&Math.min(v.length,w.length)>=5&&(v.includes(w)||w.includes(v))){
-          score=Math.max(score,Math.min(v.length,w.length)/Math.max(v.length,w.length)*72);
-        }
-      }
-    }
-    if(score>scoreBest){scoreBest=score;best=id}
-  }
-  return scoreBest>=70?best:null;
+ const wanted=new Set([c.name,...(c.epgAliases||[]),c.tvgId||'',c.xmltvId||''].filter(Boolean).map(epgAlias));let best=null,scoreBest=0;
+ for(const [id,labels] of epgChannels){const variants=[id,...labels].map(epgAlias);let score=0;for(const v of variants){if(wanted.has(v))score=Math.max(score,100);for(const w of wanted)if(v&&w&&Math.min(v.length,w.length)>=5&&(v.includes(w)||w.includes(v)))score=Math.max(score,Math.min(v.length,w.length)/Math.max(v.length,w.length)*72)}if(score>scoreBest){scoreBest=score;best=id}}
+ return scoreBest>=70?best:null;
 }
-
-function epgFor(c){
-  const id=epgMatchChannel(c);
-  if(!id)return null;
-  const arr=epgPrograms.get(id)||[],now=Date.now();
-  let current=null,next=null;
-  for(let i=0;i<arr.length;i++){
-    const p=arr[i];
-    if(p.start<=now&&p.stop>now){current=p;next=arr.slice(i+1).find(x=>x.start>=p.stop)||null;break}
-    if(p.start>now){next=p;break}
-  }
-  return {id,current,next,arr};
-}
-
+function epgFor(c){const id=epgMatchChannel(c);if(!id)return null;const arr=epgPrograms.get(id)||[],now=Date.now();let current=null,next=null;for(let i=0;i<arr.length;i++){const p=arr[i];if(p.start<=now&&p.stop>now){current=p;next=arr.slice(i+1).find(x=>x.start>=p.stop)||null;break}if(p.start>now){next=p;break}}return {id,current,next,arr}}
 function epgTime(t){return t?new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Moscow'}):'--:--'}
 function escapeEpg(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-
 function epgMarkup(c){
-  const d=epgFor(c);
-  if(!d)return `<div class="epg-empty">${epgBusy?'Обновляем программу…':epgError?'Программа временно недоступна':'Нет программы для этого канала'}</div>`;
-  if(!d.current)return `<div class="epg-empty">${d.next?'Далее: '+escapeEpg(d.next.title)+' · '+epgTime(d.next.start):'Нет актуальной передачи в расписании'}</div>`;
-  const p=d.current,pct=Math.max(0,Math.min(100,(Date.now()-p.start)/(p.stop-p.start)*100));
-  return `<div class="epg"><div class="epg-now">${escapeEpg(p.title)}</div><div class="epg-meta"><span>${epgTime(p.start)}</span><span>${epgTime(p.stop)}</span></div><div class="epg-track"><div class="epg-fill" style="width:${pct.toFixed(1)}%"></div></div><div class="epg-next">Далее: <b>${d.next?escapeEpg(d.next.title):'программа уточняется'}</b>${d.next?' · '+epgTime(d.next.start):''}</div></div>`;
+ const d=epgFor(c);
+ if(!d)return `<div class="epg-empty">${epgBusy?'Обновляем программу…':epgError?'Программа временно недоступна':'Нет программы для этого канала'}</div>`;
+ if(!d.current)return `<div class="epg-empty">${d.next?'Далее: '+escapeEpg(d.next.title)+' · '+epgTime(d.next.start):'Нет актуальной передачи в расписании'}</div>`;
+ const p=d.current,pct=Math.max(0,Math.min(100,(Date.now()-p.start)/(p.stop-p.start)*100));
+ return `<div class="epg"><div class="epg-now">${escapeEpg(p.title)}</div><div class="epg-meta"><span>${epgTime(p.start)}</span><span>${epgTime(p.stop)}</span></div><div class="epg-track"><div class="epg-fill" style="width:${pct.toFixed(1)}%"></div></div><div class="epg-next">Далее: <b>${d.next?escapeEpg(d.next.title):'программа уточняется'}</b>${d.next?' · '+epgTime(d.next.start):''}</div></div>`;
 }
-
-function epgApply(){
-  if(!channels.length)return;
-  for(const c of channels)c._epgId=epgMatchChannel(c);
-  if(epgLoadedAt){
-    const matched=channels.filter(c=>c._epgId).length;
-    epgSetStatus('Обновлено '+new Date(epgLoadedAt).toLocaleString('ru-RU')+' · '+epgRegion+' · передач '+epgProgramCount.toLocaleString('ru-RU')+' · совпало '+matched+'/'+channels.length);
-  }
-  if(!editing&&!drag)render();
-}
-
-async function fetchText(url){
-  let lastError='';
-  for(const make of EPG_PROXY){
-    const target=make(url);
-    try{
-      const res=await fetch(target,{cache:'no-store',credentials:'omit'});
-      if(!res.ok)throw Error('HTTP '+res.status);
-      return await res.text();
-    }catch(e){lastError=e.message}
-  }
-  throw Error(lastError||'Источник недоступен');
-}
-
+function epgApply(){if(!channels.length)return;for(const c of channels)c._epgId=epgMatchChannel(c);if(epgLoadedAt){const matched=channels.filter(c=>c._epgId).length;epgSetStatus('Обновлено '+new Date(epgLoadedAt).toLocaleString('ru-RU')+' · '+epgRegion+' · передач '+epgProgramCount.toLocaleString('ru-RU')+' · совпало '+matched+'/'+channels.length)}if(!editing&&!drag)render()}
 async function epgLoad(force=false){
-  if(epgBusy)return;
-  epgBusy=true;epgError='';
-  epgSetStatus('Загружаем телепрограмму…');
-  epgRenderState();
-  try{
-    try{
-      const u=new URL(GUIDE_URL);
-      u.searchParams.set('v',String(Date.now()));
-      const res=await fetch(u.toString(),{cache:'no-store',credentials:'omit'});
-      if(res.ok){
-        const data=await res.json();
-        const stats=epgInstallGuide(data,true);
-        epgApply();
-        const matched=channels.filter(c=>epgMatchChannel(c)).length;
-        epgSetStatus('Обновлено '+new Date(epgLoadedAt).toLocaleString('ru-RU')+' · '+epgRegion+' · передач '+stats.programmes.toLocaleString('ru-RU')+' · совпало '+matched+'/'+channels.length);
-        return;
-      }
-    }catch(e){}
-
-    let lastError='';
-    for(const url of EPG_XML_SOURCES){
-      try{
-        const text=await fetchText(url);
-        const doc=new DOMParser().parseFromString(text,'text/xml');
-        if(doc.getElementsByTagName('parsererror').length)throw Error('Некорректный XML');
-        const stats=epgInstallGuide(doc,true);
-        epgApply();
-        const matched=channels.filter(c=>epgMatchChannel(c)).length;
-        epgSetStatus('Обновлено '+new Date(epgLoadedAt).toLocaleString('ru-RU')+' · внешний EPG · передач '+stats.programmes.toLocaleString('ru-RU')+' · совпало '+matched+'/'+channels.length);
-        return;
-      }catch(e){lastError=e.message}
-    }
-    throw Error(lastError||'Не удалось загрузить телепрограмму');
-  }catch(e){
-    epgError=e.message||'Не удалось получить телепрограмму';
-    epgSetStatus('Телепрограмма не загружена: '+epgError);
-    epgApply();
-  }finally{
-    epgBusy=false;
-    epgRenderState();
-  }
+ if(epgBusy)return;epgBusy=true;epgError='';epgSetStatus('Загружаем телепрограмму…');epgRenderState();
+ try{
+  const u=new URL(GUIDE_URL);u.searchParams.set('v',String(Date.now()));
+  const res=await fetch(u.toString(),{cache:'no-store',credentials:'omit'});if(!res.ok)throw Error('guide.json: HTTP '+res.status);
+  const data=await res.json();const stats=epgInstallGuide(data,true);epgApply();
+  const matched=channels.filter(c=>epgMatchChannel(c)).length;
+  const failed=epgSources.filter(x=>x&&x.ok===false).map(x=>x.source).join(', ');
+  epgSetStatus('Обновлено '+new Date(epgLoadedAt).toLocaleString('ru-RU')+' · '+epgRegion+' · передач '+stats.programmes.toLocaleString('ru-RU')+' · совпало '+matched+'/'+channels.length+(failed?' · источники с ошибкой: '+failed:''));
+ }catch(e){epgError=e.message||'Не удалось получить guide.json';epgSetStatus('Телепрограмма не загружена: '+epgError+'. Проверьте публикацию guide.json рядом с pult.html.');epgApply()}
+ finally{epgBusy=false;epgRenderState()}
 }
-
 function epgOpenGuide(preferredId){
-  const dlg=$('guideDialog'),sel=$('guideChannel'),list=$('guideList'),meta=$('guideMeta');
-  if(!dlg||!sel)return;
-  const available=channels.filter(c=>epgFor(c));
-  sel.replaceChildren();
-  available.forEach(c=>sel.add(new Option(c.name,c.id)));
-  if(!available.length){
-    list.innerHTML='<div class="guide-empty">Телепрограмма ещё не загружена или каналы пока не сопоставлены. Нажмите «Обновить программу» в настройках.</div>';
-    meta.textContent='Санкт-Петербург';
-    if(!dlg.open)dlg.showModal();
-    return;
-  }
-  const chosen=available.find(c=>c.id===preferredId)||available.find(c=>c.id===state.id)||available[0];
-  if(chosen)sel.value=chosen.id;
-  const draw=()=>{
-    const c=channels.find(x=>x.id===sel.value),d=c&&epgFor(c);
-    list.replaceChildren();
-    if(!d){list.innerHTML='<div class="guide-empty">Для выбранного канала расписание пока не найдено.</div>';meta.textContent='';return}
-    meta.textContent='Санкт-Петербург · московское время · обновлено '+(epgLoadedAt?new Date(epgLoadedAt).toLocaleString('ru-RU'):'—');
-    const now=Date.now(),items=d.arr.filter(x=>x.stop>now-2*3600000).slice(0,48);
-    if(!items.length){list.innerHTML='<div class="guide-empty">Расписание на ближайшее время отсутствует.</div>';return}
-    for(const p of items){
-      const row=document.createElement('div');
-      row.className='guide-item'+(p.start<=now&&p.stop>now?' current':'');
-      const time=document.createElement('div');time.className='guide-time';time.textContent=epgTime(p.start);
-      const body=document.createElement('div'),title=document.createElement('div');
-      title.className='guide-title';title.textContent=p.title;body.append(title);
-      if(p.desc){const desc=document.createElement('div');desc.className='guide-desc';desc.textContent=p.desc;body.append(desc)}
-      row.append(time,body);list.append(row);
-    }
-  };
-  sel.onchange=draw;draw();
-  if(!dlg.open)dlg.showModal();
+ const dlg=$('guideDialog'),sel=$('guideChannel'),list=$('guideList'),meta=$('guideMeta');if(!dlg||!sel)return;
+ const available=channels.filter(c=>epgFor(c));sel.replaceChildren();available.forEach(c=>sel.add(new Option(c.name,c.id)));if(!available.length){list.innerHTML='<div class="guide-empty">Телепрограмма ещё не опубликована или каналы пока не сопоставлены. Сначала проверьте guide.json и статус EPG в настройках.</div>';meta.textContent='Санкт-Петербург';if(!dlg.open)dlg.showModal();return}
+ let chosen=available.find(c=>c.id===preferredId)||available.find(c=>c.id===state.id)||available[0];if(chosen)sel.value=chosen.id;
+ const draw=()=>{const c=channels.find(x=>x.id===sel.value),d=c&&epgFor(c);list.replaceChildren();if(!d){list.innerHTML='<div class="guide-empty">Для выбранного канала расписание пока не найдено.</div>';meta.textContent='';return}meta.textContent='Санкт-Петербург · московское время · обновлено '+(epgLoadedAt?new Date(epgLoadedAt).toLocaleString('ru-RU'):'—');const now=Date.now(),items=d.arr.filter(x=>x.stop>now-2*3600000).slice(0,36);if(!items.length){list.innerHTML='<div class="guide-empty">Расписание на ближайшее время отсутствует.</div>';return}for(const p of items){const row=document.createElement('div');row.className='guide-item'+(p.start<=now&&p.stop>now?' current':'');const time=document.createElement('div');time.className='guide-time';time.textContent=epgTime(p.start);const body=document.createElement('div'),title=document.createElement('div');title.className='guide-title';title.textContent=p.title;body.append(title);if(p.desc){const desc=document.createElement('div');desc.className='guide-desc';desc.textContent=p.desc;body.append(desc)}row.append(time,body);list.append(row)}};
+ sel.onchange=draw;draw();if(!dlg.open)dlg.showModal();
 }
-$('guideOpen')?.addEventListener('click',()=>epgOpenGuide());
-$('guideOpenSettings')?.addEventListener('click',()=>{$('settingsDialog').close();epgOpenGuide()});
-$('closeGuide')?.addEventListener('click',()=>$('guideDialog').close());
-
+$('guideOpen')?.addEventListener('click',()=>epgOpenGuide());$('guideOpenSettings')?.addEventListener('click',()=>{$('settingsDialog').close();epgOpenGuide()});$('closeGuide')?.addEventListener('click',()=>$('guideDialog').close());
 const rankMap=new Map();ALIASES.forEach((a,i)=>a.forEach(n=>rankMap.set(norm(n),i)));
 function defaultRank(c){const n=norm(c.name);return rankMap.get(n)??rankMap.get(n.replace(/(?:fhd|uhd|hd|sd|4k)$/,''))??999}
 function sortChannels(list){const personal=new Map(config.order.map((id,i)=>[id,i]));const fed=new Set(ORDER.map(norm));return list.map((c,i)=>({c,i})).sort((a,b)=>{const fa=fed.has(norm(a.c.name)),fb=fed.has(norm(b.c.name));if(fa!==fb)return fa?-1:1;if(fa&&fb)return defaultRank(a.c)-defaultRank(b.c);const pa=personal.get(a.c.id)??1e9,pb=personal.get(b.c.id)??1e9;if(pa!==pb)return pa-pb;return defaultRank(a.c)-defaultRank(b.c)||a.i-b.i}).map(x=>x.c)}
@@ -593,5 +426,45 @@ if('serviceWorker' in navigator && location.protocol==='https:'){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./efir-pult-sw.js',{scope:'./'}).catch(()=>{}),{once:true});
 }
 </script>
+<!-- EFIR_PC_STATUS_START -->
+<style>
+#efirPcStatus{display:flex;align-items:center;gap:7px;font-size:11px;margin-top:5px;color:#a6a4ae}
+#efirPcStatus .efir-dot{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
+#efirPcStatus[data-tone="green"]{color:#49d98b}#efirPcStatus[data-tone="gray"]{color:#a6a4ae}
+#efirPcStatus[data-tone="red"]{color:#ff6279}#efirPcStatus[data-tone="orange"]{color:#ffb54c}
+#nowState.efir-green{color:#49d98b}#nowState.efir-gray{color:#a6a4ae}#nowState.efir-red{color:#ff6279}#nowState.efir-orange{color:#ffb54c}
+</style>
+<script>
+(()=>{'use strict';
+let previous='',channel='',since=Date.now(),stalls=[],lastServerAt=0;
+const host=document.querySelector('.hero .copy');if(!host||document.getElementById('efirPcStatus'))return;
+const line=document.createElement('div');line.id='efirPcStatus';line.setAttribute('role','status');line.setAttribute('aria-live','polite');
+const dot=document.createElement('span');dot.className='efir-dot';dot.setAttribute('aria-hidden','true');
+const label=document.createElement('span');line.append(dot,label);host.append(line);
+function draw(tone,text){line.dataset.tone=tone;label.textContent='ПК · '+text;const el=document.getElementById('nowState');if(el){el.classList.remove('efir-green','efir-gray','efir-red','efir-orange');el.classList.add('efir-'+tone)}}
+function refresh(){
+ if(typeof state==='undefined'||typeof config==='undefined'){draw('gray','ожидаем состояние плеера');return}
+ const now=Date.now(),s=state||{},mode=String(s.state||'').toLowerCase(),id=String(s.id||''),at=Number(s.at)||0;
+ if(channel!==id){channel=id;previous='';since=now;stalls=[];lastServerAt=0}
+ if(mode!==previous){if(mode==='waiting'&&previous==='playing')stalls.push(now);since=now;previous=mode}
+ stalls=stalls.filter(t=>now-t<120000);lastServerAt=Math.max(lastServerAt,at);
+ if(!config.token){draw('gray','нужен вход по PIN');return}
+ if(typeof authBlocked!=='undefined'&&authBlocked){draw('red','нет доступа — войдите по PIN');return}
+ if(!at){draw('gray','ожидаем данные от плеера');return}
+ if(now-at>90000){draw('red','нет свежих данных от ПК');return}
+ if(typeof connected!=='undefined'&&!connected){draw('red','связь потеряна — состояние не подтверждено');return}
+ if(s.stopped||['paused','stopped','ended','error','failed','stalled','retrying','reconnecting','recovering'].includes(mode)){
+ draw('red',s.stopped?'воспроизведение остановлено':({paused:'пауза',error:'ошибка воспроизведения',stalled:'зависание',retrying:'повторный запуск',reconnecting:'переподключение',recovering:'восстановление'})[mode]||'воспроизведение остановлено или восстанавливается');return}
+ if(mode==='loading'||mode==='waiting'){
+ if(now-since>=15000){draw('red',mode==='waiting'?'длительная буферизация — возможное зависание':'длительное подключение');return}
+ draw(stalls.length>=3?'orange':'gray',stalls.length>=3?'частые остановки / буферизация':mode==='loading'?'загрузка':'буферизация');return}
+ if(mode==='playing'){draw(stalls.length>=3?'orange':'green',stalls.length>=3?'воспроизведение с частыми остановками':'воспроизведение');return}
+ draw('gray','ожидаем подтверждения воспроизведения');
+}
+if(typeof update==='function'){const original=update;update=function(){const result=original.apply(this,arguments);refresh();return result}}
+setInterval(()=>{if(!document.hidden)refresh()},1000);document.addEventListener('visibilitychange',refresh);refresh();
+})();
+</script>
+<!-- EFIR_PC_STATUS_END -->
 </body>
 </html>
