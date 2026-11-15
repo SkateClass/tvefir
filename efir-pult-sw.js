@@ -1,28 +1,79 @@
-const CACHE = 'efir-pult-assets-v2-4';
+const CACHE = 'efir-pult-assets-v2-5';
+
 const ASSETS = [
-  './efir-pult.webmanifest',
   './efir-pult-icon.svg',
   './efir-pult-icon-180.png',
   './efir-pult-icon-192.png',
   './efir-pult-icon-512.png'
 ];
+
+const ASSET_URLS = new Set(
+  ASSETS.map(path => new URL(path, self.location.href).href)
+);
+
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
 });
+
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('efir-pult-assets-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));
+  event.waitUntil(
+    (async () => {
+      const keys = await caches.keys();
+
+      await Promise.all(
+        keys
+          .filter(key =>
+            key.startsWith('efir-pult-assets-') &&
+            key !== CACHE
+          )
+          .map(key => caches.delete(key))
+      );
+
+      await self.clients.claim();
+    })()
+  );
 });
+
 self.addEventListener('fetch', event => {
   const request = event.request;
+
   if (request.method !== 'GET') return;
+
   const url = new URL(request.url);
+
   if (url.origin !== self.location.origin) return;
-  // Never cache the live remote page or Apps Script API responses: always use the current version.
-  if (request.mode === 'navigate' || url.pathname.endsWith('/efir-remote-home.html')) {
-    event.respondWith(fetch(request).catch(() => caches.match(request)));
+
+  // Манифест всегда запрашиваем из сети.
+  // Не используем его старую копию из CacheStorage или HTTP-кэша.
+  if (url.pathname.endsWith('/efir-pult.webmanifest')) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+    );
     return;
   }
-  if (ASSETS.some(asset => url.pathname.endsWith(asset.replace('./','')))) {
-    event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
+
+  // Страницы всегда получаем из сети.
+  // Старые HTML из CacheStorage не подставляем.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+    );
+    return;
+  }
+
+  // Кэшируем только перечисленные иконки.
+  if (ASSET_URLS.has(url.href)) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE);
+        const cached = await cache.match(request);
+
+        return cached || fetch(request);
+      })()
+    );
   }
 });
