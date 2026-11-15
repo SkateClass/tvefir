@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML Visual Editor для Tilda T123</title>
+<link rel="stylesheet" href="https://unpkg.com/grapesjs@0.21.13/css/grapes.min.css">
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --border:#2a3140;
+  --text:#e6edf3; --muted:#9aa4b2; --accent:#ff4d4d; --accent2:#3b82f6;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px}
+input,textarea,select{font:inherit}
+.topbar{height:54px;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em}
+.logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ff8a3d);display:grid;place-items:center;font-size:14px;color:#fff}
+.brand small{display:block;font-size:10px;color:var(--muted);font-weight:500}
+.spacer{flex:1}
+.btn{height:36px;padding:0 13px;background:var(--panel2);color:var(--text);border:1px solid var(--border);display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:#414b5e;background:#232b3a}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.icon{width:36px;padding:0;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.danger{color:#ff8a8a}
+.workspace{display:grid;grid-template-columns:280px 1fr 300px;height:calc(100vh - 54px)}
+.left,.right{background:var(--panel);border-right:1px solid var(--border);overflow:auto}
+.right{border-right:0;border-left:1px solid var(--border)}
+.panel-head{padding:12px 14px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.panel-body{padding:10px}
+.canvas-wrap{position:relative;overflow:hidden;background:#0a0e14}
+#gjs{height:100%}
+.notice{margin:10px;padding:10px 12px;border:1px solid #334155;background:#111827;border-radius:10px;color:#cbd5e1;font-size:12px;line-height:1.45}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,.72);backdrop-filter:blur(4px);display:none;z-index:100}
+.modal-backdrop.open{display:flex;align-items:center;justify-content:center}
+.modal{width:min(1000px,94vw);max-height:90vh;background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.modal-head h2{margin:0;font-size:18px}
+.modal-body{padding:16px 18px;overflow:auto}
+.modal textarea{width:100%;min-height:300px;background:#0b1017;color:#dbe4ee;border:1px solid var(--border);border-radius:10px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.5;resize:vertical}
+.modal-foot{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{padding:8px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);color:var(--muted)}
+.tab.active{color:#fff;border-color:var(--accent);background:#2a1518}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.field input,.field select{width:100%;height:38px;background:#0b1017;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:0 10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12px;color:var(--muted);line-height:1.5}
+.toast{position:fixed;right:18px;bottom:18px;background:#111827;border:1px solid var(--border);color:#e6edf3;padding:11px 14px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(8px);transition:.22s;z-index:200;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.gjs-one-bg{background-color:var(--panel)!important}
+.gjs-two-color{color:var(--text)!important}
+.gjs-three-bg{background-color:var(--panel2)!important}
+.gjs-four-color,.gjs-four-color-h:hover{color:var(--accent)!important}
+.gjs-pn-buttons .gjs-pn-btn{color:var(--text)}
+.gjs-blocks-c{overflow:auto}
+.gjs-layer-title{color:var(--text)!important}
+.gjs-sm-label{color:var(--muted)!important}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#303a4a;border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+@media(max-width:1100px){.workspace{grid-template-columns:220px 1fr 240px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">H</div>
+    <div>HTML Visual Editor<small>для блоков Tilda T123</small></div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn icon" id="undoBtn" title="Отменить (Ctrl+Z)">↶</button>
+  <button class="btn icon" id="redoBtn" title="Вернуть (Ctrl+Shift+Z)">↷</button>
+  <button class="btn" id="importBtn">Импорт HTML</button>
+  <button class="btn" id="saveBtn">Сохранить</button>
+  <button class="btn primary" id="exportBtn">Экспорт для T123</button>
+</header>
+
+<main class="workspace">
+  <aside class="left">
+    <div class="panel-head"><span>Блоки и слои</span></div>
+    <div class="panel-body">
+      <div class="notice">Импортируйте HTML, затем выбирайте элементы на холсте или в дереве слоёв. Можно редактировать текст, стили, размеры и положение.</div>
+    </div>
+    <div id="layersContainer"></div>
+    <div class="panel-head"><span>Библиотека</span></div>
+    <div id="blocksContainer"></div>
+  </aside>
+
+  <section class="canvas-wrap">
+    <div id="gjs"></div>
+  </section>
+
+  <aside class="right">
+    <div class="panel-head"><span>Свойства и стили</span></div>
+    <div id="styleContainer"></div>
+    <div class="panel-head"><span>Настройки</span></div>
+    <div id="traitsContainer"></div>
+  </aside>
+</main>
+
+<div class="modal-backdrop" id="importModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Импорт HTML</h2><div class="spacer"></div><button class="btn icon" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab active" data-tab="paste">Вставить код</button>
+        <button class="tab" data-tab="file">Загрузить файл</button>
+      </div>
+      <div id="pastePane">
+        <div class="field"><label>HTML, CSS и JavaScript для импорта</label>
+          <textarea id="importCode" placeholder="Вставьте код блока T123, фрагмент страницы или полный HTML..."></textarea>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Базовая ширина холста</label>
+            <select id="baseWidth"><option value="1200">1200 px</option><option value="1440">1440 px</option><option value="960">960 px</option></select>
+          </div>
+          <div class="field"><label>Режим импорта</label>
+            <select id="importMode"><option value="replace">Заменить содержимое</option><option value="append">Добавить к текущему</option></select>
+          </div>
+        </div>
+        <p class="hint">Для блока T123 лучше вставлять самодостаточный фрагмент: HTML, при необходимости <code>&lt;style&gt;</code> и <code>&lt;script&gt;</code>. Внешние CSS/JS по ссылкам сохранятся в экспортированном коде.</p>
+      </div>
+      <div id="filePane" style="display:none">
+        <div class="field"><label>HTML-файл</label><input type="file" id="importFile" accept=".html,.htm,.txt"></div>
+        <p class="hint">Файл будет прочитан локально в браузере. Внешние ресурсы по абсолютным ссылкам останутся в коде.</p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Отмена</button>
+      <button class="btn primary" id="doImport">Импортировать</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="exportModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Экспорт для Tilda T123</h2><div class="spacer"></div><button class="btn icon" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Готовый код</label><textarea id="exportCode" readonly></textarea></div>
+      <p class="hint">Скопируйте код и вставьте его в блок <b>T123 «HTML-код»</b> в Tilda. Затем нажмите «Опубликовать» на странице Тильды.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="downloadExport">Скачать .html</button>
+      <button class="btn primary" id="copyExport">Скопировать код</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/grapesjs@0.21.13/dist/grapes.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let editor=null;
+
+function toast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+
+function initEditor(){
+  editor=grapesjs.init({
+    container:'#gjs',
+    height:'100%',
+    width:'auto',
+    storageManager:false,
+    undoManager:{},
+    assetManager:{upload:false,uploadText:'Перетащите файлы или нажмите',},
+    blockManager:{},
+    layerManager:{},
+    styleManager:{sectors:[
+      {name:'Размер',open:false,buildProps:['width','height','min-height','max-width','padding','margin']},
+      {name:'Позиция',open:false,buildProps:['display','position','top','left','right','bottom','z-index','float','clear','overflow']},
+      {name:'Типографика',open:true,buildProps:['font-family','font-size','font-weight','font-style','letter-spacing','line-height','color','text-align','text-transform','text-decoration']},
+      {name:'Фон и границы',open:false,buildProps:['background-color','background','border','border-radius','box-shadow','opacity']}
+    ]},
+    deviceManager:{
+      devices:[
+        {id:'desktop',name:'Desktop 1440',width:'1440px',widthMedia:'1440px'},
+        {id:'laptop',name:'Laptop 1280',width:'1280px',widthMedia:'1280px'},
+        {id:'tablet',name:'Tablet 768',width:'768px',widthMedia:'768px'},
+        {id:'mobile',name:'Mobile 375',width:'375px',widthMedia:'480px'}
+      ]
+    },
+    panels:{defaults:[]},
+    canvas:{styles:['https://unpkg.com/grapesjs@0.21.13/css/grapes.min.css']}
+  });
+
+  const pn=editor.Panels;
+  pn.addPanel({id:'options',buttons:[
+    {id:'sw-visibility',className:'fa fa-eye',command:'sw-visibility',title:'Показать контуры',active:1},
+    {id:'preview',className:'fa fa-eye',command:'preview',title:'Предпросмотр'},
+    {id:'fullscreen',className:'fa fa-arrows-alt',command:'fullscreen',title:'На весь экран'},
+    {id:'undo',className:'fa fa-undo',command:'undo',title:'Отменить'},
+    {id:'redo',className:'fa fa-repeat',command:'redo',title:'Вернуть'},
+    {id:'canvas-clear',className:'fa fa-trash',command:'canvas-clear',title:'Очистить холст'}
+  ]});
+
+  const bm=editor.BlockManager;
+  bm.add('section',{'label':'Секция','category':'Базовые','content':'<section style="padding:48px 24px"><h2>Новая секция</h2><p>Отредактируйте этот текст.</p></section>'});
+  bm.add('heading',{'label':'Заголовок','category':'Текст','content':'<h2 style="margin:0 0 16px">Заголовок</h2>'});
+  bm.add('paragraph',{'label':'Абзац','category':'Текст','content':'<p style="line-height:1.6">Текст абзаца. Нажмите, чтобы отредактировать.</p>'});
+  bm.add('button',{'label':'Кнопка','category':'Элементы','content':'<a href="#" style="display:inline-block;padding:12px 22px;background:#ff4d4d;color:#fff;border-radius:8px;text-decoration:none">Кнопка</a>'});
+  bm.add('image',{'label':'Изображение','category':'Медиа','content':'<img src="https://via.placeholder.com/600x360" style="max-width:100%;display:block;border-radius:12px">'});
+  bm.add('divider',{'label':'Разделитель','category':'Базовые','content':'<hr style="border:0;border-top:1px solid #333;margin:24px 0">'});
+  bm.add('form',{'label':'Форма заявки','category':'Формы','content':`<form style="display:grid;gap:12px;max-width:480px"><input placeholder="Имя" style="padding:12px;border-radius:8px;border:1px solid #333"><input placeholder="Телефон" style="padding:12px;border-radius:8px;border:1px solid #333"><button type="submit" style="padding:12px;background:#ff4d4d;color:#fff;border:0;border-radius:8px">Отправить</button></form>`});
+
+  editor.on('load',()=>{
+    $('#layersContainer').appendChild(editor.LayerManager.render());
+    $('#styleContainer').appendChild(editor.StyleManager.render());
+    $('#traitsContainer').appendChild(editor.TraitManager.render());
+    $('#blocksContainer').appendChild(editor.BlockManager.render());
+    updateUndoButtons();
+    editor.on('update',updateUndoButtons);
+    editor.on('component:selected',()=>{ $('#traitsContainer').style.display='block' });
+    toast('Редактор готов. Импортируйте HTML.');
+  });
+}
+
+function updateUndoButtons(){
+  const um=editor.UndoManager;
+  $('#undoBtn').disabled=!um.hasUndo();
+  $('#redoBtn').disabled=!um.hasRedo();
+}
+
+function openModal(id){$(id).classList.add('open')}
+function closeModal(id){$(id).classList.remove('open')}
+
+async function doImport(){
+  let code=$('#importCode').value.trim();
+  const fileInput=$('#importFile');
+  if($('#filePane').style.display!=='none'){
+    const f=fileInput.files[0];
+    if(!f){toast('Выберите HTML-файл');return}
+    code=await f.text();
+  }
+  if(!code){toast('Вставьте HTML-код или выберите файл');return}
+  const mode=$('#importMode').value;
+  const width=$('#baseWidth').value+'px';
+  editor.setDevice('desktop');
+  if(mode==='replace'){
+    editor.setComponents(code);
+  }else{
+    editor.append(code);
+  }
+  editor.Canvas.setZoom(.75);
+  closeModal('#importModal');
+  toast('HTML импортирован');
+}
+
+function exportForTilda(){
+  const html=editor.getHtml();
+  const css=editor.getCss();
+  const js=editor.getJs();
+  let out='';
+  if(css.trim()) out+='<style>\n'+css+'\n</style>\n';
+  out+=html;
+  if(js.trim()) out+='\n<script>\n'+js+'\n<\/script>';
+  $('#exportCode').value=out;
+  openModal('#exportModal');
+}
+
+function saveProject(){
+  try{
+    localStorage.setItem('html_visual_editor_project',JSON.stringify({html:editor.getHtml(),css:editor.getCss(),js:editor.getJs()}));
+    toast('Проект сохранён в браузере');
+  }catch(e){toast('Не удалось сохранить: '+e.message)}
+}
+
+function loadProject(){
+  try{
+    const raw=localStorage.getItem('html_visual_editor_project');
+    if(!raw)return;
+    const p=JSON.parse(raw);
+    let code='';
+    if(p.css)code+='<style>'+p.css+'</style>';
+    code+=p.html||'';
+    if(p.js)code+='<script>'+p.js+'<\/script>';
+    if(code.trim())editor.setComponents(code);
+  }catch(e){}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initEditor();
+
+  $('#importBtn').onclick=()=>openModal('#importModal');
+  $('#exportBtn').onclick=exportForTilda;
+  $('#saveBtn').onclick=saveProject;
+  $('#doImport').onclick=doImport;
+  $('#undoBtn').onclick=()=>{editor.UndoManager.undo();updateUndoButtons()};
+  $('#redoBtn').onclick=()=>{editor.UndoManager.redo();updateUndoButtons()};
+
+  $('#copyExport').onclick=async()=>{
+    const code=$('#exportCode').value;
+    try{await navigator.clipboard.writeText(code);toast('Код скопирован')}
+    catch(e){$('#exportCode').select();document.execCommand('copy');toast('Код скопирован')}
+  };
+
+  $('#downloadExport').onclick=()=>{
+    const blob=new Blob([$('#exportCode').value],{type:'text/html'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='tilda-t123-export.html';a.click();
+  };
+
+  $$('[data-close]').forEach(b=>b.onclick=e=>closeModal('#'+e.target.closest('.modal-backdrop').id));
+  $$('.tab').forEach(t=>t.onclick=()=>{
+    $$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');
+    const isPaste=t.dataset.tab==='paste';
+    $('#pastePane').style.display=isPaste?'block':'none';
+    $('#filePane').style.display=isPaste?'none':'block';
+  });
+
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){
+      if(e.shiftKey){editor.UndoManager.redo()}else{editor.UndoManager.undo()}
+      updateUndoButtons();
+    }
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveProject()}
+    if(e.key==='Escape'){$$('.modal-backdrop.open').forEach(m=>m.classList.remove('open'))}
+  });
+
+  setTimeout(loadProject,600);
+});
+</script>
+</body>
+</html>
