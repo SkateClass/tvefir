@@ -4,7 +4,7 @@
   "short_name": "ЭФИР Пульт",
   "description": "Домашний пульт управления телевизором ЭФИР",
   "lang": "ru",
-  "start_url": "./efir-remote-home.html",
+  "start_url": "/tvefir/pult2.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
