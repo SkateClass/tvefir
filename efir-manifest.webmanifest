@@ -5,7 +5,7 @@
   "description": "Пульт управления компьютерным плеером ЭФИР",
   "lang": "ru",
   "dir": "ltr",
-  "start_url": "/tvefir/pult.html",
+  "start_url": "/tvefir/pult2.html",
   "scope": "/tvefir/",
   "display": "standalone",
   "background_color": "#0b0b10",
